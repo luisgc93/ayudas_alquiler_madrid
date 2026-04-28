@@ -3,70 +3,59 @@ import {
   Legend, ResponsiveContainer,
 } from 'recharts'
 
-const COLOR_ES = '#3b82f6'   // blue-500
-const COLOR_EX = '#f97316'   // orange-500
+const COLOR_ES = '#3b82f6'
+const COLOR_EX = '#f97316'
 
-function CustomTooltip({ active, payload, label, codes }) {
+function CustomTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
-  const codeEntry = codes.find(c => c.code === label)
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-3 text-sm max-w-xs">
-      <p className="font-semibold text-gray-900 dark:text-gray-100 mb-1">Motivo {label}</p>
-      {codeEntry && (
-        <p className="text-gray-500 dark:text-gray-400 text-xs mb-2 leading-snug">{codeEntry.description}</p>
-      )}
+      <p className="font-semibold text-gray-900 dark:text-gray-100 mb-1">{label} €</p>
       {payload.map(p => (
         <p key={p.name} style={{ color: p.fill }} className="font-medium">
-          {p.name}: {p.value}%
-          <span className="text-gray-400 dark:text-gray-500 font-normal ml-1">
-            ({p.payload[p.name === 'Español' ? 'countEs' : 'countEx'].toLocaleString('es-ES')} solicitantes)
-          </span>
+          {p.name}: {p.value.toLocaleString('es-ES')} beneficiarios
         </p>
       ))}
     </div>
   )
 }
 
-export default function ExclusionChart({ chart, onBarClick, codes = [], dark = false }) {
-  const { español: es, extranjero: ex } = chart
+export default function DistributionChart({ distribution, dark = false }) {
+  const { buckets, español: es, extranjero: ex } = distribution
 
-  const chartData = es.codes.map((code, i) => ({
-    code,
-    Español: es.rates[i],
-    Extranjero: ex.rates[i],
-    countEs: es.counts[i],
-    countEx: ex.counts[i],
+  const chartData = buckets.map((bucket, i) => ({
+    bucket,
+    Español: es.counts[i],
+    Extranjero: ex.counts[i],
   }))
 
-  const tickColor  = dark ? '#9ca3af' : '#6b7280'
-  const gridColor  = dark ? '#374151' : '#f0f0f0'
-  const cursorFill = dark ? '#1f2937' : '#f9fafb'
+  const tickColor   = dark ? '#9ca3af' : '#6b7280'
+  const gridColor   = dark ? '#374151' : '#f0f0f0'
+  const cursorFill  = dark ? '#1f2937' : '#f9fafb'
   const legendColor = dark ? '#d1d5db' : '#374151'
 
   return (
-    <ResponsiveContainer width="100%" height={380}>
+    <ResponsiveContainer width="100%" height={320}>
       <BarChart
         data={chartData}
         margin={{ top: 4, right: 16, left: 0, bottom: 4 }}
         barCategoryGap="25%"
         barGap={3}
-        onClick={e => e?.activeLabel && onBarClick(e.activeLabel)}
       >
         <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
         <XAxis
-          dataKey="code"
+          dataKey="bucket"
           tick={{ fontSize: 12, fill: tickColor }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
-          tickFormatter={v => `${v}%`}
           tick={{ fontSize: 12, fill: tickColor }}
           axisLine={false}
           tickLine={false}
           width={42}
         />
-        <Tooltip content={<CustomTooltip codes={codes} />} cursor={{ fill: cursorFill }} />
+        <Tooltip content={<CustomTooltip />} cursor={{ fill: cursorFill }} />
         <Legend
           iconType="square"
           iconSize={10}

@@ -248,5 +248,88 @@
       "count": 1602,
       "amount": 4000958.96
     }
-  ]
+  ],
+  "stats": {
+    "total": {
+      "min": 10.08,
+      "max": 5400.0,
+      "avg": 2482.5,
+      "count": 4035
+    },
+    "español": {
+      "min": 10.08,
+      "max": 5400.0,
+      "avg": 2472.64,
+      "count": 2433
+    },
+    "extranjero": {
+      "min": 22.5,
+      "max": 5400.0,
+      "avg": 2497.48,
+      "count": 1602
+    }
+  },
+  "funnel": {
+    "total": {
+      "admitted": 4035,
+      "excluded": 8106,
+      "total": 12141
+    },
+    "español": {
+      "admitted": 2433,
+      "excluded": 4782,
+      "total": 7215
+    },
+    "extranjero": {
+      "admitted": 1602,
+      "excluded": 3324,
+      "total": 4926
+    }
+  },
+  "distribution": {
+    "buckets": [
+      "0–500",
+      "500–1k",
+      "1k–2k",
+      "2k–3k",
+      "3k–4k",
+      "4k–5.4k"
+    ],
+    "total": {
+      "counts": [
+        521,
+        450,
+        633,
+        735,
+        955,
+        741
+      ],
+      "median": 2500.0,
+      "mean": 2482.5
+    },
+    "español": {
+      "counts": [
+        331,
+        254,
+        383,
+        460,
+        546,
+        459
+      ],
+      "median": 2448.0,
+      "mean": 2472.64
+    },
+    "extranjero": {
+      "counts": [
+        190,
+        196,
+        250,
+        275,
+        409,
+        282
+      ],
+      "median": 2591.0,
+      "mean": 2497.48
+    }
+  }
 }

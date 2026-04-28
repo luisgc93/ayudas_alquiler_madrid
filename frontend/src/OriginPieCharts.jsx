@@ -6,9 +6,9 @@ function EuroTooltip({ active, payload }) {
   if (!active || !payload?.length) return null
   const { name, value } = payload[0]
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 text-sm">
-      <p className="font-semibold text-gray-900">{name}</p>
-      <p className="text-gray-600">{value.toLocaleString('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}</p>
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-3 text-sm">
+      <p className="font-semibold text-gray-900 dark:text-gray-100">{name}</p>
+      <p className="text-gray-600 dark:text-gray-400">{value.toLocaleString('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })}</p>
     </div>
   )
 }
@@ -17,9 +17,9 @@ function CountTooltip({ active, payload }) {
   if (!active || !payload?.length) return null
   const { name, value } = payload[0]
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 text-sm">
-      <p className="font-semibold text-gray-900">{name}</p>
-      <p className="text-gray-600">{value.toLocaleString('es-ES')} beneficiarios</p>
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-3 text-sm">
+      <p className="font-semibold text-gray-900 dark:text-gray-100">{name}</p>
+      <p className="text-gray-600 dark:text-gray-400">{value.toLocaleString('es-ES')} beneficiarios</p>
     </div>
   )
 }
@@ -43,7 +43,7 @@ function SinglePie({ data, dataKey, title, TooltipComponent }) {
 
   return (
     <div className="flex-1 min-w-0">
-      <p className="text-center text-sm font-medium text-gray-700 mb-2">{title}</p>
+      <p className="text-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{title}</p>
       <ResponsiveContainer width="100%" height={260}>
         <PieChart>
           <Pie
@@ -72,8 +72,8 @@ function SinglePie({ data, dataKey, title, TooltipComponent }) {
 
 export default function OriginPieCharts({ pie }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <h2 className="text-base font-semibold text-gray-900 mb-4">Beneficiarios por origen</h2>
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+      <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">Beneficiarios por origen</h2>
       <div className="flex gap-6 flex-wrap">
         <SinglePie data={pie} dataKey="count"  title="Número de beneficiarios"    TooltipComponent={CountTooltip} />
         <SinglePie data={pie} dataKey="amount" title="Importe total de ayudas (€)" TooltipComponent={EuroTooltip} />
