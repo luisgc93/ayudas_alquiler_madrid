@@ -22,13 +22,13 @@ El PDF original contiene la resolución con los admitidos definitivos (`jovenes_
 
 | Métrica | Total | Nombres españoles | Nombres no españoles |
 |---|---|---|---|
-| Beneficiarios | **4.035** | 2.058 (51,0 %) | 1.977 (49,0 %) |
-| Importe total | **10.016.896,38 €** | 5.123.215,01 € (51,1 %) | 4.893.681,37 € (48,9 %) |
-| Ayuda media | **2.482,50 €** | 2.489,41 € | 2.475,31 € |
+| Beneficiarios | **4.035** | 2.419 (60,0 %) | 1.616 (40,0 %) |
+| Importe total | **10.016.896,38 €** | 5.981.787,48 € (59,7 %) | 4.035.108,90 € (40,3 %) |
+| Ayuda media | **2.482,50 €** | 2.472,83 € | 2.496,97 € |
 | Ayuda máxima | **5.400,00 €** | — | — |
 | Ayuda mínima | **10,08 €** | — | — |
 
-**Conclusión principal:** la distribución de beneficiarios y del importe total está prácticamente igualada entre personas con nombres de apariencia española y personas con nombres de apariencia no española (≈51 % / 49 %). La ayuda media es muy similar en ambos grupos (~2.480 €), lo que indica que el criterio de concesión es independiente del origen del nombre.
+**Conclusión principal:** el 60 % de los beneficiarios tiene nombres de apariencia española, frente al 40 % con nombres de apariencia no española. La distribución del importe total sigue la misma proporción (≈60 % / 40 %). La ayuda media es muy similar en ambos grupos (~2.480 €), lo que indica que el criterio de concesión es independiente del origen del nombre.
 
 ![Gráficas ayudas](graficas_ayudas.png)
 
