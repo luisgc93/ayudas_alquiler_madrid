@@ -1,0 +1,252 @@
+{
+  "chart": {
+    "español": {
+      "label": "Español",
+      "codes": [
+        "1.1",
+        "2.1",
+        "2.2",
+        "2.3",
+        "3",
+        "4.1",
+        "4.2",
+        "4.3",
+        "4.4",
+        "4.5",
+        "4.6",
+        "4.7",
+        "5",
+        "6",
+        "7.1",
+        "7.3",
+        "8",
+        "10",
+        "11"
+      ],
+      "rates": [
+        9.4,
+        17.7,
+        4.4,
+        1.7,
+        13.4,
+        0.2,
+        1.1,
+        6.6,
+        2.3,
+        0.6,
+        29.8,
+        14.5,
+        23.7,
+        53.6,
+        32.4,
+        27.0,
+        0.8,
+        0.9,
+        15.6
+      ],
+      "counts": [
+        449,
+        848,
+        212,
+        83,
+        642,
+        10,
+        54,
+        317,
+        110,
+        30,
+        1423,
+        694,
+        1134,
+        2565,
+        1548,
+        1290,
+        38,
+        45,
+        747
+      ],
+      "total": 4782
+    },
+    "extranjero": {
+      "label": "Extranjero",
+      "codes": [
+        "1.1",
+        "2.1",
+        "2.2",
+        "2.3",
+        "3",
+        "4.1",
+        "4.2",
+        "4.3",
+        "4.4",
+        "4.5",
+        "4.6",
+        "4.7",
+        "5",
+        "6",
+        "7.1",
+        "7.3",
+        "8",
+        "10",
+        "11"
+      ],
+      "rates": [
+        21.3,
+        22.6,
+        6.7,
+        2.3,
+        11.5,
+        0.7,
+        1.7,
+        9.0,
+        3.5,
+        0.9,
+        37.0,
+        24.1,
+        31.1,
+        53.8,
+        43.6,
+        18.3,
+        0.9,
+        0.8,
+        11.6
+      ],
+      "counts": [
+        709,
+        751,
+        222,
+        76,
+        383,
+        22,
+        55,
+        299,
+        117,
+        30,
+        1231,
+        800,
+        1033,
+        1789,
+        1449,
+        608,
+        30,
+        28,
+        387
+      ],
+      "total": 3324
+    }
+  },
+  "codes": [
+    {
+      "code": "1.1",
+      "description": "Los miembros de la unidad de convivencia no son menores de 35 años o no son mayores de 65 años."
+    },
+    {
+      "code": "1.2",
+      "description": "No ha acreditado pertenecer a uno de los sectores declarados preferentes. 1.2.1 No ha aportado el título de familia numerosa. 1.2.2 No ha acreditado ser una unidad familiar monoparental con cargas familiares. 1.2.3 No ha aportado documentación acreditativa como víctima de violencia de género 1.2.4 No ha aportado documentación acreditativa como víctima de terrorismo 1.2.5 No ha aportado certificado del grado de discapacidad. 1.2.6 No ha aportado el certificado de haber agotado, todos los miembros de la unidad de convivencia, las prestaciones por desempleo."
+    },
+    {
+      "code": "2.1",
+      "description": "No se ha aportado el contrato de arrendamiento o el aportado está incompleto, sin fecha o sin firmar."
+    },
+    {
+      "code": "2.2",
+      "description": "No consta la fecha del contrato de arrendamiento."
+    },
+    {
+      "code": "2.3",
+      "description": "No se trata de arrendamiento de vivienda conforme a la LAU."
+    },
+    {
+      "code": "3",
+      "description": "La renta mensual a pagar es superior a 600 € o 900 €."
+    },
+    {
+      "code": "4.1",
+      "description": "La solicitud está presentada fuera de plazo."
+    },
+    {
+      "code": "4.2",
+      "description": "La solicitud no está firmada o no se corresponde con el modelo oficial de la convocatoria."
+    },
+    {
+      "code": "4.3",
+      "description": "No se ha indicado en la solicitud las fechas de nacimiento de los titulares y/o convivientes."
+    },
+    {
+      "code": "4.4",
+      "description": "No consta el importe mensual de la renta de alquiler."
+    },
+    {
+      "code": "4.5",
+      "description": "No se ha indicado en la solicitud el número de cuenta para el abono de la ayuda o el que se ha indicado no es correcto."
+    },
+    {
+      "code": "4.6",
+      "description": "No se ha aportado el ANEXO I o el aportado es incorrecto."
+    },
+    {
+      "code": "4.7",
+      "description": "No se ha aportado el ANEXO II autorizando la consulta de los datos de los convivientes mayores de edad o el aportado es incorrecto."
+    },
+    {
+      "code": "4.8",
+      "description": "No ha acreditado ser hijo de víctima de violencia de género."
+    },
+    {
+      "code": "5",
+      "description": "No se ha aportado el DNI/Permiso de residencia, o está caducado, o la consulta de datos no ha podido efectuarse."
+    },
+    {
+      "code": "6",
+      "description": "No se ha aportado el certificado o volante de empadronamiento o es incorrecto."
+    },
+    {
+      "code": "6.1",
+      "description": "No coinciden las personas de la unidad de convivencia en el certificado de empadronamiento y la solicitud."
+    },
+    {
+      "code": "7.1",
+      "description": "No se ha aportado la declaración de IRPF o la consulta no ha podido efectuarse o no se ha aportado la documentación acreditativa de los ingresos de la unidad de convivencia."
+    },
+    {
+      "code": "7.2",
+      "description": "Los ingresos no superan el límite mínimo establecido en la Orden de convocatoria."
+    },
+    {
+      "code": "7.3",
+      "description": "Los ingresos superan el límite máximo establecido"
+    },
+    {
+      "code": "7.5",
+      "description": "Los ingresos de la unidad de convivencia no están informados."
+    },
+    {
+      "code": "8",
+      "description": "Tiene parentesco con el arrendador o es socio o partícipe de la persona física o jurídica que figura como arrendador en el contrato."
+    },
+    {
+      "code": "10",
+      "description": "Disfruta de una ayuda de alquiler incompatible."
+    },
+    {
+      "code": "11",
+      "description": "Inadmisión por duplicidad de expedientes para la misma vivienda"
+    },
+    {
+      "code": "13",
+      "description": "Superación del límite presupuestario previsto en la convocatoria."
+    }
+  ],
+  "pie": [
+    {
+      "name": "Español",
+      "count": 2433,
+      "amount": 6015937.42
+    },
+    {
+      "name": "Extranjero",
+      "count": 1602,
+      "amount": 4000958.96
+    }
+  ]
+}
