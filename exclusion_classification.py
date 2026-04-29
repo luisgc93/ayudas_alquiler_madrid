@@ -20,7 +20,7 @@ import numpy as np
 import pandas as pd
 
 
-CSV_PATH = Path("ayudas_alquiler_cam_2024_excluidos.csv")
+CSV_PATH = Path("excluidos_por_nacionalidades.csv")
 OUT_PATH = Path("exclusion_reasons_by_origin.png")
 
 # Natural sort key for codes like "1.1", "4.6", "10", "11"

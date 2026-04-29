@@ -3,6 +3,7 @@ import ExclusionChart from './ExclusionChart'
 import CodesTable from './CodesTable'
 import OriginPieCharts from './OriginPieCharts'
 import DistributionChart from './DistributionChart'
+import DataView from './DataView'
 
 function SunIcon() {
   return (
@@ -26,6 +27,7 @@ function MoonIcon() {
 export default function App() {
   const [data, setData] = useState(null)
   const [highlighted, setHighlighted] = useState(null)
+  const [mainTab, setMainTab] = useState('analisis')
   const [dark, setDark] = useState(() => {
     const stored = localStorage.getItem('theme')
     if (stored) return stored === 'dark'
@@ -66,6 +68,34 @@ export default function App() {
             {dark ? <SunIcon /> : <MoonIcon />}
           </button>
         </div>
+
+        {/* Main tabs */}
+        <div className="flex gap-1 border-b border-gray-200 dark:border-gray-700">
+          {[
+            { key: 'analisis', label: 'Análisis' },
+            { key: 'datos',    label: 'Datos' },
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setMainTab(key)}
+              className={`px-5 py-2 text-sm font-medium border-b-2 transition-colors ${
+                mainTab === key
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {mainTab === 'datos' && (
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+            <DataView baseUrl={import.meta.env.BASE_URL} />
+          </div>
+        )}
+
+        {mainTab === 'analisis' && <>
 
         {/* Pie charts */}
         <OriginPieCharts pie={data.pie} />
@@ -204,6 +234,8 @@ export default function App() {
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">Clave de motivos de exclusión</h2>
           <CodesTable codes={data.codes} highlighted={highlighted} />
         </div>
+
+        </>}
 
       </div>
     </div>

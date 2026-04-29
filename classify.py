@@ -1,0 +1,237 @@
+"""
+Apply nationality classification to beneficiarios.csv and excluidos.csv,
+then rebuild all frontend data (frontend/public/*.json).
+
+Run this script whenever spanish_names.csv is updated — no need to re-parse
+the PDFs.
+"""
+
+import json
+import logging
+import math
+import re
+from pathlib import Path
+
+import pandas as pd
+
+
+SPANISH_NAMES_CSV   = Path("spanish_names.csv")
+BENEFICIARIOS_CSV   = Path("beneficiarios.csv")
+EXCLUIDOS_CSV       = Path("excluidos.csv")
+BENEFICIARIOS_OUT   = Path("beneficiarios_por_nacionalidades.csv")
+EXCLUIDOS_OUT       = Path("excluidos_por_nacionalidades.csv")
+CODES_PATH          = Path("exclusion_codes.md")
+JSON_PATH           = Path("frontend/public/data.json")
+JSON_ADMITIDOS_PATH = Path("frontend/public/admitidos.json")
+JSON_EXCLUIDOS_PATH = Path("frontend/public/excluidos.json")
+
+BUCKETS       = [0, 500, 1000, 2000, 3000, 4000, 5400.01]
+BUCKET_LABELS = ["0–500", "500–1k", "1k–2k", "2k–3k", "3k–4k", "4k–5.4k"]
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+)
+logger = logging.getLogger(__name__)
+
+
+# ── Nationality classification ─────────────────────────────────────────────────
+
+def load_spanish_names(csv_path: Path) -> set[str]:
+    df = pd.read_csv(csv_path)
+    return set(df["name"].str.strip().str.lower())
+
+
+def is_likely_spanish_name(full_name: str, spanish_names: set[str]) -> bool:
+    """All first names must be in the Spanish names dataset."""
+    try:
+        _, first_names_part = full_name.split(",", maxsplit=1)
+    except ValueError:
+        return False
+
+    first_names = [n.strip().lower() for n in first_names_part.split() if n.strip()]
+    if not first_names:
+        return False
+
+    return all(n in spanish_names for n in first_names)
+
+
+def classify(csv_in: Path, csv_out: Path, spanish_names: set[str]) -> None:
+    df = pd.read_csv(csv_in)
+    df["español"] = df["nombre"].apply(lambda n: is_likely_spanish_name(n, spanish_names))
+    spanish_count = df["español"].sum()
+    logger.info(
+        "%s → %d filas (español: %d, extranjero: %d)",
+        csv_out, len(df), spanish_count, len(df) - spanish_count,
+    )
+    df.to_csv(csv_out, index=False, encoding="utf-8-sig")
+
+
+# ── Exclusion codes ────────────────────────────────────────────────────────────
+
+def parse_codes(md_path: Path) -> list[dict]:
+    text = md_path.read_text(encoding="utf-8")
+    pattern = re.compile(r"^(\d+(?:\.\d+)?)\.\s+(.+)", re.MULTILINE)
+    matches = list(pattern.finditer(text))
+    codes = []
+    for i, m in enumerate(matches):
+        code = m.group(1)
+        start = m.start(2)
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
+        description = re.sub(r"\s{2,}", " ", text[start:end].strip().replace("\n", " "))
+        codes.append({"code": code, "description": description})
+    return codes
+
+
+# ── Frontend data builders ─────────────────────────────────────────────────────
+
+def _sort_key(code: str) -> tuple:
+    return tuple(int(p) for p in code.split("."))
+
+
+def build_chart_data(csv_path: Path) -> dict:
+    df = pd.read_csv(csv_path)
+    group_sizes = df["español"].value_counts()
+
+    exploded = (
+        df[["español", "motivos"]]
+        .dropna(subset=["motivos"])
+        .assign(motivo=lambda d: d["motivos"].str.split(r"\s*\|\s*"))
+        .explode("motivo")
+        .assign(motivo=lambda d: d["motivo"].str.strip())
+    )
+    counts = (
+        exploded.groupby(["motivo", "español"])
+        .size()
+        .reset_index(name="count")
+    )
+    counts["rate"] = counts.apply(
+        lambda r: round(r["count"] / group_sizes[r["español"]] * 100, 1), axis=1
+    )
+
+    pivot_count = counts.pivot(index="motivo", columns="español", values="count").fillna(0)
+    pivot_rate  = counts.pivot(index="motivo", columns="español", values="rate").fillna(0)
+    motivos = sorted(pivot_rate.index.tolist(), key=_sort_key)
+
+    def series(col_bool, label):
+        return {
+            "label":  label,
+            "codes":  motivos,
+            "rates":  [pivot_rate.loc[m, col_bool]  if m in pivot_rate.index  else 0 for m in motivos],
+            "counts": [int(pivot_count.loc[m, col_bool]) if m in pivot_count.index else 0 for m in motivos],
+            "total":  int(group_sizes[col_bool]),
+        }
+
+    return {"español": series(True, "Español"), "extranjero": series(False, "Extranjero")}
+
+
+def build_pie_data(csv_path: Path) -> list:
+    df = pd.read_csv(csv_path)
+    counts  = df["español"].value_counts()
+    amounts = df.groupby("español")["ayuda_num"].sum()
+
+    def entry(label, key):
+        return {"name": label, "count": int(counts[key]), "amount": round(float(amounts[key]), 2)}
+
+    return [entry("Español", True), entry("Extranjero", False)]
+
+
+def build_stats_data(csv_path: Path) -> dict:
+    df = pd.read_csv(csv_path)
+
+    def stats(series):
+        return {
+            "min":   round(float(series.min()), 2),
+            "max":   round(float(series.max()), 2),
+            "avg":   round(float(series.mean()), 2),
+            "count": int(series.count()),
+        }
+
+    return {
+        "total":      stats(df["ayuda_num"]),
+        "español":    stats(df.loc[df["español"] == True,  "ayuda_num"]),
+        "extranjero": stats(df.loc[df["español"] == False, "ayuda_num"]),
+    }
+
+
+def build_funnel_data(adm_path: Path, exc_path: Path) -> dict:
+    adm = pd.read_csv(adm_path)
+    exc = pd.read_csv(exc_path)
+
+    def entry(adm_mask=None, exc_mask=None):
+        n_adm = len(adm) if adm_mask is None else int(adm[adm_mask].shape[0])
+        n_exc = len(exc) if exc_mask is None else int(exc[exc_mask].shape[0])
+        return {"admitted": n_adm, "excluded": n_exc, "total": n_adm + n_exc}
+
+    return {
+        "total":      entry(),
+        "español":    entry(adm["español"] == True,  exc["español"] == True),
+        "extranjero": entry(adm["español"] == False, exc["español"] == False),
+    }
+
+
+def build_distribution_data(csv_path: Path) -> dict:
+    df = pd.read_csv(csv_path)
+
+    def group_stats(series):
+        counts = []
+        for i in range(len(BUCKETS) - 1):
+            lo, hi = BUCKETS[i], BUCKETS[i + 1]
+            counts.append(int(((series >= lo) & (series < hi)).sum()))
+        return {"counts": counts, "median": round(float(series.median()), 2), "mean": round(float(series.mean()), 2)}
+
+    return {
+        "buckets":    BUCKET_LABELS,
+        "total":      group_stats(df["ayuda_num"]),
+        "español":    group_stats(df.loc[df["español"] == True,  "ayuda_num"]),
+        "extranjero": group_stats(df.loc[df["español"] == False, "ayuda_num"]),
+    }
+
+
+def _nan_to_none(records: list[dict]) -> list[dict]:
+    return [
+        {k: (None if isinstance(v, float) and math.isnan(v) else v) for k, v in row.items()}
+        for row in records
+    ]
+
+
+def build_frontend_json() -> None:
+    logger.info("Construyendo datos del frontend…")
+
+    codes     = parse_codes(CODES_PATH)
+    chart     = build_chart_data(EXCLUIDOS_OUT)
+    pie       = build_pie_data(BENEFICIARIOS_OUT)
+    stats     = build_stats_data(BENEFICIARIOS_OUT)
+    funnel    = build_funnel_data(BENEFICIARIOS_OUT, EXCLUIDOS_OUT)
+    dist      = build_distribution_data(BENEFICIARIOS_OUT)
+
+    adm_records = _nan_to_none(pd.read_csv(BENEFICIARIOS_OUT).to_dict(orient="records"))
+    exc_records = _nan_to_none(pd.read_csv(EXCLUIDOS_OUT).to_dict(orient="records"))
+
+    JSON_ADMITIDOS_PATH.write_text(json.dumps(adm_records, ensure_ascii=False), encoding="utf-8")
+    JSON_EXCLUIDOS_PATH.write_text(json.dumps(exc_records, ensure_ascii=False), encoding="utf-8")
+    logger.info("  %s, %s", JSON_ADMITIDOS_PATH, JSON_EXCLUIDOS_PATH)
+
+    payload = {"chart": chart, "codes": codes, "pie": pie, "stats": stats, "funnel": funnel, "distribution": dist}
+    JSON_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    logger.info("  %s", JSON_PATH)
+
+
+# ── Main ───────────────────────────────────────────────────────────────────────
+
+def main() -> None:
+    logger.info("Cargando nombres españoles desde %s", SPANISH_NAMES_CSV)
+    spanish_names = load_spanish_names(SPANISH_NAMES_CSV)
+    logger.info("  %d nombres cargados", len(spanish_names))
+
+    classify(BENEFICIARIOS_CSV, BENEFICIARIOS_OUT, spanish_names)
+    classify(EXCLUIDOS_CSV, EXCLUIDOS_OUT, spanish_names)
+
+    build_frontend_json()
+
+    logger.info("DONE ✅")
+
+
+if __name__ == "__main__":
+    main()

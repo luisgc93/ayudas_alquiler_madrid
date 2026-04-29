@@ -1,36 +1,61 @@
 # Ayudas al Alquiler CAM 2024 — Análisis de datos
 
-Análisis de la lista definitiva de beneficiarios de la convocatoria de ayudas al alquiler para jóvenes de la Comunidad de Madrid (2024), publicada en:
+Análisis de la lista definitiva de beneficiarios y excluidos de la convocatoria de ayudas al alquiler para jóvenes de la Comunidad de Madrid (2024).
+
+El sitio interactivo está publicado en: **https://luisgc93.github.io/ayudas_alquiler_madrid/**
 
 > **Fuente:** [Preguntas frecuentes — Orden de ayudas al alquiler 2024 (CAM)](https://sede.comunidad.madrid/medias/20251216preguntasfrecuentesorden2024pdf/download)
-
-El PDF original contiene la resolución con los admitidos definitivos (`jovenes_admitido_definitivo_publicar.pdf`).
 
 ---
 
 ## Metodología
 
-1. **`parse_pdf.py`** — extrae las filas del PDF con `pdfplumber` mediante expresión regular, limpia los importes y clasifica cada beneficiario como de nombre probable español o no español comparando sus nombres de pila contra un dataset de nombres españoles (`spanish_names.csv`). El resultado se exporta a `ayudas_alquiler_cam_2024.csv`.
-
-2. **`graficas.py`** — lee el CSV y genera dos gráficos de tarta comparando el número de beneficiarios y el importe total percibido, segmentados por origen del nombre. Se guarda en `graficas_ayudas.png`.
-
-> **Nota sobre la clasificación:** un beneficiario se considera de nombre probable español cuando **todos** sus nombres de pila aparecen en el dataset de nombres españoles. Es una heurística conservadora; los falsos negativos (nombres españoles no reconocidos) son posibles.
+La clasificación de origen se basa en comparar los nombres de pila de cada solicitante contra un dataset de nombres españoles (`spanish_names.csv`). Un solicitante se considera de nombre probable español cuando **todos** sus nombres de pila aparecen en el dataset. Es una heurística conservadora; los falsos negativos (nombres españoles no reconocidos) son posibles.
 
 ---
 
-## Resultados
+## Scripts
 
-| Métrica | Total | Nombres españoles | Nombres no españoles |
-|---|---|---|---|
-| Beneficiarios | **4.035** | 2.433 (60,3 %) | 1.602 (39,7 %) |
-| Importe total | **10.016.896,38 €** | 6.015.937,42 € (60,1 %) | 4.000.958,96 € (39,9 %) |
-| Ayuda media | **2.482,50 €** | 2.472,64 € | 2.497,48 € |
-| Ayuda máxima | **5.400,00 €** | — | — |
-| Ayuda mínima | **10,08 €** | — | — |
+| Script | Descripción |
+|---|---|
+| `parse_pdfs.py` | Extrae los datos de los PDFs originales y genera `beneficiarios.csv` y `excluidos.csv` |
+| `classify.py` | Aplica la clasificación por nacionalidad, genera `*_por_nacionalidades.csv` y reconstruye los datos del frontend (`frontend/public/*.json`) |
 
-**Conclusión principal:** el 60,3 % de los beneficiarios tiene nombres de apariencia española, frente al 39,7 % con nombres de apariencia no española. La distribución del importe total sigue la misma proporción (≈60 % / 40 %). La ayuda media es muy similar en ambos grupos (~2.480 €), lo que indica que el criterio de concesión es independiente del origen del nombre.
+### Parsear los PDFs (sólo necesario si cambian los PDFs originales)
 
-![Gráficas ayudas](graficas_ayudas.png)
+```bash
+uv run python parse_pdfs.py
+```
+
+### Recalcular la clasificación (tras actualizar `spanish_names.csv`)
+
+```bash
+uv run python classify.py
+```
+
+---
+
+## Estructura de ficheros
+
+```
+datos_originales/
+  beneficiarios.pdf          # Resolución definitiva de admitidos
+  excluidos.pdf              # Resolución definitiva de excluidos
+  motivos_de_exclusion.pdf   # Códigos y descripción de motivos de exclusión
+
+beneficiarios.csv                        # Datos en bruto extraídos del PDF de admitidos
+excluidos.csv                            # Datos en bruto extraídos del PDF de excluidos
+beneficiarios_por_nacionalidades.csv     # Admitidos con columna 'español'
+excluidos_por_nacionalidades.csv         # Excluidos con columna 'español'
+spanish_names.csv                        # Dataset de nombres españoles para la clasificación
+exclusion_codes.md                       # Descripción de los códigos de motivos de exclusión
+
+frontend/                  # Aplicación React (desplegada en GitHub Pages)
+  public/
+    data.json              # Datos agregados para los gráficos
+    admitidos.json         # Tabla completa de admitidos
+    excluidos.json         # Tabla completa de excluidos
+```
 
 ---
 
@@ -48,31 +73,9 @@ uv sync
 
 ---
 
-## Uso
-
-### 1. Parsear el PDF y generar el CSV
-
-```bash
-uv run python parse_pdf.py
-```
-
-Genera `ayudas_alquiler_cam_2024.csv` con las columnas:
-`orden`, `expediente`, `nombre`, `nif_nie`, `baremo`, `ayuda`, `ayuda_num`, `español`
-
-### 2. Generar las gráficas
-
-```bash
-uv run python graficas.py
-```
-
-Genera `graficas_ayudas.png` con los dos gráficos de tarta.
-
----
-
 ## Dependencias
 
 | Paquete | Versión mínima | Uso |
 |---|---|---|
 | `pdfplumber` | 0.11.9 | Extracción de texto del PDF |
 | `pandas` | 3.0.2 | Procesamiento de datos |
-| `matplotlib` | 3.10.9 | Visualización |
