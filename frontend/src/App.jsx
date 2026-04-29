@@ -69,6 +69,37 @@ export default function App() {
           </button>
         </div>
 
+        {/* Description */}
+        <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+          <p>
+            Análisis de la lista definitiva de beneficiarios y excluidos de la convocatoria de{' '}
+            <strong className="text-gray-700 dark:text-gray-300">ayudas al alquiler para jóvenes de la Comunidad de Madrid (2024)</strong>.
+            La clasificación por origen se basa en comparar los nombres de pila de cada solicitante
+            contra un dataset de nombres españoles — los solicitantes con todos sus nombres en el dataset
+            se consideran de probable origen español.
+          </p>
+          <p>
+            Fuente:{' '}
+            <a
+              href="https://sede.comunidad.madrid/medias/20251216preguntasfrecuentesorden2024pdf/download"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline"
+            >
+              Preguntas frecuentes — Orden de ayudas al alquiler 2024 (CAM)
+            </a>
+            {' · '}
+            <a
+              href="https://github.com/luisgc93/ayudas_alquiler_madrid"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline"
+            >
+              Código fuente
+            </a>
+          </p>
+        </div>
+
         {/* Main tabs */}
         <div className="flex gap-1 border-b border-gray-200 dark:border-gray-700">
           {[
