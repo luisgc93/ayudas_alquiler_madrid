@@ -53,11 +53,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-      <div className="max-w-6xl mx-auto px-6 py-10 space-y-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6 sm:space-y-10">
 
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+          <h1 className="text-lg sm:text-2xl font-semibold text-gray-900 dark:text-gray-100">
             Ayudas al alquiler CAM 2024
           </h1>
           <button
@@ -121,7 +121,7 @@ export default function App() {
         </div>
 
         {mainTab === 'datos' && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
             <DataView baseUrl={import.meta.env.BASE_URL} />
           </div>
         )}
@@ -132,7 +132,7 @@ export default function App() {
         <OriginPieCharts pie={data.pie} />
 
         {/* Stats */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">Importe de ayuda (€) — admitidos</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-right">
@@ -140,8 +140,8 @@ export default function App() {
                 <tr className="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wide border-b border-gray-100 dark:border-gray-700">
                   <th className="text-left pb-2 font-medium">Grupo</th>
                   <th className="pb-2 font-medium">Solicitantes</th>
-                  <th className="pb-2 font-medium">Mínimo</th>
-                  <th className="pb-2 font-medium">Máximo</th>
+                  <th className="pb-2 font-medium hidden sm:table-cell">Mínimo</th>
+                  <th className="pb-2 font-medium hidden sm:table-cell">Máximo</th>
                   <th className="pb-2 font-medium">Media</th>
                   <th className="pb-2 font-medium">Total</th>
                 </tr>
@@ -159,8 +159,8 @@ export default function App() {
                     <tr key={key} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                       <td className="text-left py-2 font-medium text-gray-700 dark:text-gray-300">{label}</td>
                       <td className="py-2 text-gray-600 dark:text-gray-400">{s.count.toLocaleString('es-ES')}</td>
-                      <td className="py-2 text-gray-600 dark:text-gray-400">{fmt(s.min)}</td>
-                      <td className="py-2 text-gray-600 dark:text-gray-400">{fmt(s.max)}</td>
+                      <td className="py-2 text-gray-600 dark:text-gray-400 hidden sm:table-cell">{fmt(s.min)}</td>
+                      <td className="py-2 text-gray-600 dark:text-gray-400 hidden sm:table-cell">{fmt(s.max)}</td>
                       <td className="py-2 font-semibold text-gray-800 dark:text-gray-200">{fmt(s.avg)}</td>
                       <td className="py-2 font-semibold text-gray-800 dark:text-gray-200">{fmtTotal(s.avg * s.count)} €</td>
                     </tr>
@@ -172,13 +172,13 @@ export default function App() {
         </div>
 
         {/* Distribution */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1">Distribución del importe de ayuda</h2>
-          <div className="flex flex-wrap gap-6 mb-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400 flex-1">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-6 mb-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400 sm:flex-1">
               La mayoría de los admitidos recibe entre 3.000–5.400 €. El tramo 4k–5.4k es el más frecuente.
             </p>
-            <div className="flex gap-6 text-sm shrink-0">
+            <div className="flex gap-6 text-sm">
               {[
                 { label: 'Total', key: 'total' },
                 { label: 'Español', key: 'español' },
@@ -200,7 +200,7 @@ export default function App() {
         </div>
 
         {/* Funnel */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1">Solicitudes: admitidas vs excluidas</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
             2 de cada 3 solicitantes fueron excluidos. La tasa es prácticamente idéntica entre grupos.
@@ -247,24 +247,26 @@ export default function App() {
         </div>
 
         {/* Bar chart */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1">Motivos de exclusión por origen</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-            % de solicitantes de cada grupo excluidos por cada motivo. Un solicitante puede tener varios motivos.
-            <span className="ml-2 font-medium text-gray-700 dark:text-gray-300">
-              Español: {data.chart.español.total.toLocaleString('es-ES')}
-            </span>
-            <span className="mx-1 text-gray-400 dark:text-gray-500">·</span>
-            <span className="font-medium text-gray-700 dark:text-gray-300">
-              Extranjero: {data.chart.extranjero.total.toLocaleString('es-ES')}
-            </span>
-            <span className="ml-3 text-gray-400 dark:text-gray-500">Haz clic en una barra para ver el motivo.</span>
-          </p>
+          <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-baseline gap-1 sm:gap-0 text-sm text-gray-500 dark:text-gray-400 mb-4">
+            <p className="sm:mr-2">% de solicitantes de cada grupo excluidos por cada motivo. Un solicitante puede tener varios motivos.</p>
+            <p className="flex flex-wrap items-baseline gap-x-1">
+              <span className="font-medium text-gray-700 dark:text-gray-300">
+                Español: {data.chart.español.total.toLocaleString('es-ES')}
+              </span>
+              <span className="text-gray-400 dark:text-gray-500">·</span>
+              <span className="font-medium text-gray-700 dark:text-gray-300">
+                Extranjero: {data.chart.extranjero.total.toLocaleString('es-ES')}
+              </span>
+              <span className="ml-1">Haz clic en una barra para ver el motivo.</span>
+            </p>
+          </div>
           <ExclusionChart chart={data.chart} codes={data.codes} onBarClick={setHighlighted} dark={dark} />
         </div>
 
         {/* Codes table */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">Clave de motivos de exclusión</h2>
           <CodesTable codes={data.codes} highlighted={highlighted} />
         </div>

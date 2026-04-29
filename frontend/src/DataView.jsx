@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react'
 import DataTable from './DataTable'
 
 const ADMITIDOS_COLS = [
-  { accessorKey: 'orden',      header: 'Orden' },
-  { accessorKey: 'expediente', header: 'Expediente' },
+  { accessorKey: 'orden',      header: 'Orden',      meta: { hideOnMobile: true } },
+  { accessorKey: 'expediente', header: 'Expediente', meta: { hideOnMobile: true } },
   { accessorKey: 'nombre',     header: 'Nombre',  cell: info => <span className="font-medium">{info.getValue()}</span> },
-  { accessorKey: 'nif_nie',    header: 'NIF/NIE' },
-  { accessorKey: 'baremo',     header: 'Baremo' },
+  { accessorKey: 'nif_nie',    header: 'NIF/NIE',    meta: { hideOnMobile: true } },
+  { accessorKey: 'baremo',     header: 'Baremo',     meta: { hideOnMobile: true } },
   { accessorKey: 'ayuda',      header: 'Ayuda (€)', cell: info => <span className="tabular-nums">{info.getValue()}</span> },
   {
     accessorKey: 'español',
@@ -20,9 +20,9 @@ const ADMITIDOS_COLS = [
 ]
 
 const EXCLUIDOS_COLS = [
-  { accessorKey: 'expediente', header: 'Expediente' },
+  { accessorKey: 'expediente', header: 'Expediente', meta: { hideOnMobile: true } },
   { accessorKey: 'nombre',     header: 'Nombre', cell: info => <span className="font-medium">{info.getValue()}</span> },
-  { accessorKey: 'dni_nie',    header: 'DNI/NIE' },
+  { accessorKey: 'dni_nie',    header: 'DNI/NIE',    meta: { hideOnMobile: true } },
   {
     accessorKey: 'motivos',
     header: 'Motivos',

@@ -74,7 +74,7 @@ export default function OriginPieCharts({ pie }) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
       <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">Beneficiarios por origen</h2>
-      <div className="flex gap-6 flex-wrap">
+      <div className="flex flex-col sm:flex-row gap-6">
         <SinglePie data={pie} dataKey="count"  title="Número de beneficiarios"    TooltipComponent={CountTooltip} />
         <SinglePie data={pie} dataKey="amount" title="Importe total de ayudas (€)" TooltipComponent={EuroTooltip} />
       </div>

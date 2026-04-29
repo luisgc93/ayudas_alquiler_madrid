@@ -47,7 +47,7 @@ export default function ExclusionChart({ chart, onBarClick, codes = [], dark = f
     <ResponsiveContainer width="100%" height={380}>
       <BarChart
         data={chartData}
-        margin={{ top: 4, right: 16, left: 0, bottom: 4 }}
+        margin={{ top: 4, right: 16, left: 0, bottom: 40 }}
         barCategoryGap="25%"
         barGap={3}
         onClick={e => e?.activeLabel && onBarClick(e.activeLabel)}
@@ -55,9 +55,12 @@ export default function ExclusionChart({ chart, onBarClick, codes = [], dark = f
         <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
         <XAxis
           dataKey="code"
-          tick={{ fontSize: 12, fill: tickColor }}
+          tick={{ fontSize: 11, fill: tickColor }}
           axisLine={false}
           tickLine={false}
+          angle={-35}
+          textAnchor="end"
+          interval={0}
         />
         <YAxis
           tickFormatter={v => `${v}%`}

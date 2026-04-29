@@ -64,7 +64,7 @@ export default function DataTable({ columns, data }) {
                   <th
                     key={header.id}
                     onClick={header.column.getToggleSortingHandler()}
-                    className={`px-3 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide whitespace-nowrap ${header.column.getCanSort() ? 'cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200' : ''}`}
+                    className={`px-3 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide whitespace-nowrap ${header.column.getCanSort() ? 'cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-200' : ''} ${header.column.columnDef.meta?.hideOnMobile ? 'hidden sm:table-cell' : ''}`}
                   >
                     {flexRender(header.column.columnDef.header, header.getContext())}
                     {header.column.getCanSort() && (
@@ -79,7 +79,7 @@ export default function DataTable({ columns, data }) {
             {table.getRowModel().rows.map(row => (
               <tr key={row.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30">
                 {row.getVisibleCells().map(cell => (
-                  <td key={cell.id} className="px-3 py-2 text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                  <td key={cell.id} className={`px-3 py-2 text-gray-700 dark:text-gray-300 whitespace-nowrap ${cell.column.columnDef.meta?.hideOnMobile ? 'hidden sm:table-cell' : ''}`}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
@@ -90,8 +90,8 @@ export default function DataTable({ columns, data }) {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-        <span>
+      <div className="flex flex-wrap items-center justify-between gap-y-2 text-xs text-gray-500 dark:text-gray-400">
+        <span className="shrink-0">
           {totalRows > 0 ? `${firstRow}–${lastRow} de ${totalRows.toLocaleString('es-ES')}` : '0 resultados'}
         </span>
         <div className="flex items-center gap-1">
@@ -105,7 +105,7 @@ export default function DataTable({ columns, data }) {
             disabled={!table.getCanPreviousPage()}
             className="px-2 py-1 rounded disabled:opacity-30 hover:bg-gray-100 dark:hover:bg-gray-700"
           >‹</button>
-          <span className="px-2">
+          <span className="px-2 whitespace-nowrap">
             Página {pageIndex + 1} / {table.getPageCount()}
           </span>
           <button
@@ -118,14 +118,14 @@ export default function DataTable({ columns, data }) {
             disabled={!table.getCanNextPage()}
             className="px-2 py-1 rounded disabled:opacity-30 hover:bg-gray-100 dark:hover:bg-gray-700"
           >»</button>
+          <select
+            value={pageSize}
+            onChange={e => table.setPageSize(Number(e.target.value))}
+            className="ml-1 text-xs rounded border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-1 py-0.5"
+          >
+            {[50, 100, 200].map(s => <option key={s} value={s}>{s} / pág</option>)}
+          </select>
         </div>
-        <select
-          value={pageSize}
-          onChange={e => table.setPageSize(Number(e.target.value))}
-          className="ml-2 text-xs rounded border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-1 py-0.5"
-        >
-          {[50, 100, 200].map(s => <option key={s} value={s}>{s} / pág</option>)}
-        </select>
       </div>
     </div>
   )
