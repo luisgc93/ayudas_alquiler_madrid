@@ -143,6 +143,7 @@ export default function App() {
                   <th className="pb-2 font-medium">Mínimo</th>
                   <th className="pb-2 font-medium">Máximo</th>
                   <th className="pb-2 font-medium">Media</th>
+                  <th className="pb-2 font-medium">Total</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-gray-700">
@@ -153,6 +154,7 @@ export default function App() {
                 ].map(({ label, key }) => {
                   const s = data.stats[key]
                   const fmt = (v) => v.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                  const fmtTotal = (v) => v.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
                   return (
                     <tr key={key} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                       <td className="text-left py-2 font-medium text-gray-700 dark:text-gray-300">{label}</td>
@@ -160,6 +162,7 @@ export default function App() {
                       <td className="py-2 text-gray-600 dark:text-gray-400">{fmt(s.min)}</td>
                       <td className="py-2 text-gray-600 dark:text-gray-400">{fmt(s.max)}</td>
                       <td className="py-2 font-semibold text-gray-800 dark:text-gray-200">{fmt(s.avg)}</td>
+                      <td className="py-2 font-semibold text-gray-800 dark:text-gray-200">{fmtTotal(s.avg * s.count)} €</td>
                     </tr>
                   )
                 })}
