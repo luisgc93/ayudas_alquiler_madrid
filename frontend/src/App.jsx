@@ -28,6 +28,7 @@ export default function App() {
   const [data, setData] = useState(null)
   const [highlighted, setHighlighted] = useState(null)
   const [mainTab, setMainTab] = useState('analisis')
+  const [preferenteFilter, setPreferenteFilter] = useState('all')
   const [dark, setDark] = useState(() => {
     const stored = localStorage.getItem('theme')
     if (stored) return stored === 'dark'
@@ -129,8 +130,29 @@ export default function App() {
 
         {mainTab === 'analisis' && <>
 
+        {/* Preferente filter */}
+        <div className="flex gap-1.5">
+          {[
+            { key: 'all',        label: 'Todos' },
+            { key: 'preferente', label: 'Preferentes' },
+            { key: 'general',    label: 'General' },
+          ].map(({ key, label }) => (
+            <button
+              key={key}
+              onClick={() => setPreferenteFilter(key)}
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                preferenteFilter === key
+                  ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300'
+                  : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
         {/* Pie charts */}
-        <OriginPieCharts pie={data.pie} />
+        <OriginPieCharts pie={data[preferenteFilter].pie} />
 
         {/* Stats */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
@@ -153,7 +175,7 @@ export default function App() {
                   { label: 'Español',    key: 'español' },
                   { label: 'Extranjero', key: 'extranjero' },
                 ].map(({ label, key }) => {
-                  const s = data.stats[key]
+                  const s = data[preferenteFilter].stats[key]
                   const fmt = (v) => v.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                   const fmtTotal = (v) => v.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
                   return (
@@ -185,7 +207,7 @@ export default function App() {
                 { label: 'Español', key: 'español' },
                 { label: 'Extranjero', key: 'extranjero' },
               ].map(({ label, key }) => {
-                const d = data.distribution[key]
+                const d = data[preferenteFilter].distribution[key]
                 const fmt = v => v.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
                 return (
                   <div key={key} className="text-center">
@@ -197,14 +219,14 @@ export default function App() {
               })}
             </div>
           </div>
-          <DistributionChart distribution={data.distribution} dark={dark} />
+          <DistributionChart distribution={data[preferenteFilter].distribution} dark={dark} />
         </div>
 
         {/* Funnel */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1">Solicitudes: admitidas vs excluidas</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-            2 de cada 3 solicitantes fueron excluidos. La tasa es prácticamente idéntica entre grupos.
+            El 61,7% de los solicitantes fueron excluidos. La tasa es algo superior en el grupo de probable origen español (63,9% frente a 60,7%).
           </p>
           <div className="space-y-5">
             {[

@@ -38,12 +38,15 @@ uv run python classify.py
 
 ```
 datos_originales/
-  beneficiarios.pdf          # Resolución definitiva de admitidos
-  excluidos.pdf              # Resolución definitiva de excluidos
-  motivos_de_exclusion.pdf   # Códigos y descripción de motivos de exclusión
+  beneficiarios.pdf                        # Resolución definitiva de admitidos (convocatoria general)
+  beneficiarios_preferentes.pdf            # Resolución definitiva de admitidos (sectores preferentes)
+  excluidos.pdf                            # Resolución definitiva de excluidos (convocatoria general)
+  excluidos_preferentes.pdf                # Resolución definitiva de excluidos (sectores preferentes)
+  excluidos_preferentes_por_presupuesto.pdf# Excluidos preferentes por agotamiento de presupuesto
+  motivos_de_exclusion.pdf                 # Códigos y descripción de motivos de exclusión
 
-beneficiarios.csv                        # Datos en bruto extraídos del PDF de admitidos
-excluidos.csv                            # Datos en bruto extraídos del PDF de excluidos
+beneficiarios.csv                        # Datos en bruto de admitidos (general + preferentes, columna 'preferente')
+excluidos.csv                            # Datos en bruto de excluidos (general + preferentes, columna 'preferente')
 beneficiarios_por_nacionalidades.csv     # Admitidos con columna 'español'
 excluidos_por_nacionalidades.csv         # Excluidos con columna 'español'
 spanish_names.csv                        # Dataset de nombres españoles para la clasificación
@@ -52,8 +55,8 @@ exclusion_codes.md                       # Descripción de los códigos de motiv
 frontend/                  # Aplicación React (desplegada en GitHub Pages)
   public/
     data.json              # Datos agregados para los gráficos
-    admitidos.json         # Tabla completa de admitidos
-    excluidos.json         # Tabla completa de excluidos
+    admitidos.json         # Tabla completa de admitidos (con campo 'preferente')
+    excluidos.json         # Tabla completa de excluidos (con campo 'preferente')
 ```
 
 ---

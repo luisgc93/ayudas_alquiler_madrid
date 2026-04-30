@@ -15,12 +15,12 @@ from pathlib import Path
 import pandas as pd
 
 
-SPANISH_NAMES_CSV   = Path("spanish_names.csv")
-BENEFICIARIOS_CSV   = Path("beneficiarios.csv")
-EXCLUIDOS_CSV       = Path("excluidos.csv")
-BENEFICIARIOS_OUT   = Path("beneficiarios_por_nacionalidades.csv")
-EXCLUIDOS_OUT       = Path("excluidos_por_nacionalidades.csv")
-CODES_PATH          = Path("exclusion_codes.md")
+SPANISH_NAMES_CSV               = Path("spanish_names.csv")
+BENEFICIARIOS_CSV               = Path("beneficiarios.csv")
+EXCLUIDOS_CSV                   = Path("excluidos.csv")
+BENEFICIARIOS_OUT               = Path("beneficiarios_por_nacionalidades.csv")
+EXCLUIDOS_OUT                   = Path("excluidos_por_nacionalidades.csv")
+CODES_PATH                      = Path("exclusion_codes.md")
 JSON_PATH           = Path("frontend/public/data.json")
 JSON_ADMITIDOS_PATH = Path("frontend/public/admitidos.json")
 JSON_EXCLUIDOS_PATH = Path("frontend/public/excluidos.json")
@@ -45,6 +45,8 @@ def load_spanish_names(csv_path: Path) -> set[str]:
 
 def is_likely_spanish_name(full_name: str, spanish_names: set[str]) -> bool:
     """All first names must be in the Spanish names dataset."""
+    if not isinstance(full_name, str):
+        return False
     try:
         _, first_names_part = full_name.split(",", maxsplit=1)
     except ValueError:
@@ -59,7 +61,9 @@ def is_likely_spanish_name(full_name: str, spanish_names: set[str]) -> bool:
 
 def classify(csv_in: Path, csv_out: Path, spanish_names: set[str]) -> None:
     df = pd.read_csv(csv_in)
-    df["español"] = df["nombre"].apply(lambda n: is_likely_spanish_name(n, spanish_names))
+    df["español"] = df["nombre"].apply(
+        lambda n: is_likely_spanish_name(n, spanish_names) if isinstance(n, str) else None
+    )
     spanish_count = df["español"].sum()
     logger.info(
         "%s → %d filas (español: %d, extranjero: %d)",
@@ -100,6 +104,7 @@ def build_chart_data(csv_path: Path) -> dict:
         .assign(motivo=lambda d: d["motivos"].str.split(r"\s*\|\s*"))
         .explode("motivo")
         .assign(motivo=lambda d: d["motivo"].str.strip())
+        .loc[lambda d: d["motivo"] != ""]  # drop empty strings from leading/trailing pipes
     )
     counts = (
         exploded.groupby(["motivo", "español"])
@@ -126,21 +131,20 @@ def build_chart_data(csv_path: Path) -> dict:
     return {"español": series(True, "Español"), "extranjero": series(False, "Extranjero")}
 
 
-def build_pie_data(csv_path: Path) -> list:
-    df = pd.read_csv(csv_path)
+def build_pie_data(df: pd.DataFrame) -> list:
     counts  = df["español"].value_counts()
     amounts = df.groupby("español")["ayuda_num"].sum()
 
     def entry(label, key):
-        return {"name": label, "count": int(counts[key]), "amount": round(float(amounts[key]), 2)}
+        return {"name": label, "count": int(counts.get(key, 0)), "amount": round(float(amounts.get(key, 0.0)), 2)}
 
     return [entry("Español", True), entry("Extranjero", False)]
 
 
-def build_stats_data(csv_path: Path) -> dict:
-    df = pd.read_csv(csv_path)
-
+def build_stats_data(df: pd.DataFrame) -> dict:
     def stats(series):
+        if series.empty:
+            return {"min": 0, "max": 0, "avg": 0, "count": 0}
         return {
             "min":   round(float(series.min()), 2),
             "max":   round(float(series.max()), 2),
@@ -155,10 +159,7 @@ def build_stats_data(csv_path: Path) -> dict:
     }
 
 
-def build_funnel_data(adm_path: Path, exc_path: Path) -> dict:
-    adm = pd.read_csv(adm_path)
-    exc = pd.read_csv(exc_path)
-
+def build_funnel_data(adm: pd.DataFrame, exc: pd.DataFrame) -> dict:
     def entry(adm_mask=None, exc_mask=None):
         n_adm = len(adm) if adm_mask is None else int(adm[adm_mask].shape[0])
         n_exc = len(exc) if exc_mask is None else int(exc[exc_mask].shape[0])
@@ -171,15 +172,15 @@ def build_funnel_data(adm_path: Path, exc_path: Path) -> dict:
     }
 
 
-def build_distribution_data(csv_path: Path) -> dict:
-    df = pd.read_csv(csv_path)
-
+def build_distribution_data(df: pd.DataFrame) -> dict:
     def group_stats(series):
         counts = []
         for i in range(len(BUCKETS) - 1):
             lo, hi = BUCKETS[i], BUCKETS[i + 1]
             counts.append(int(((series >= lo) & (series < hi)).sum()))
-        return {"counts": counts, "median": round(float(series.median()), 2), "mean": round(float(series.mean()), 2)}
+        median = round(float(series.median()), 2) if not series.empty else 0
+        mean   = round(float(series.mean()),   2) if not series.empty else 0
+        return {"counts": counts, "median": median, "mean": mean}
 
     return {
         "buckets":    BUCKET_LABELS,
@@ -199,21 +200,37 @@ def _nan_to_none(records: list[dict]) -> list[dict]:
 def build_frontend_json() -> None:
     logger.info("Construyendo datos del frontend…")
 
-    codes     = parse_codes(CODES_PATH)
-    chart     = build_chart_data(EXCLUIDOS_OUT)
-    pie       = build_pie_data(BENEFICIARIOS_OUT)
-    stats     = build_stats_data(BENEFICIARIOS_OUT)
-    funnel    = build_funnel_data(BENEFICIARIOS_OUT, EXCLUIDOS_OUT)
-    dist      = build_distribution_data(BENEFICIARIOS_OUT)
+    df_ben  = pd.read_csv(BENEFICIARIOS_OUT)
+    df_exc  = pd.read_csv(EXCLUIDOS_OUT)
+    df_pref = df_ben[df_ben["preferente"]]
+    df_gen  = df_ben[~df_ben["preferente"]]
 
-    adm_records = _nan_to_none(pd.read_csv(BENEFICIARIOS_OUT).to_dict(orient="records"))
-    exc_records = _nan_to_none(pd.read_csv(EXCLUIDOS_OUT).to_dict(orient="records"))
+    def group_data(df):
+        return {
+            "pie":          build_pie_data(df),
+            "stats":        build_stats_data(df),
+            "distribution": build_distribution_data(df),
+        }
+
+    codes  = parse_codes(CODES_PATH)
+    chart  = build_chart_data(EXCLUIDOS_OUT)
+    funnel = build_funnel_data(df_ben, df_exc)
+
+    adm_records = _nan_to_none(df_ben.to_dict(orient="records"))
+    exc_records = _nan_to_none(df_exc.to_dict(orient="records"))
 
     JSON_ADMITIDOS_PATH.write_text(json.dumps(adm_records, ensure_ascii=False), encoding="utf-8")
     JSON_EXCLUIDOS_PATH.write_text(json.dumps(exc_records, ensure_ascii=False), encoding="utf-8")
     logger.info("  %s, %s", JSON_ADMITIDOS_PATH, JSON_EXCLUIDOS_PATH)
 
-    payload = {"chart": chart, "codes": codes, "pie": pie, "stats": stats, "funnel": funnel, "distribution": dist}
+    payload = {
+        "chart":      chart,
+        "codes":      codes,
+        "funnel":     funnel,
+        "all":        group_data(df_ben),
+        "preferente": group_data(df_pref),
+        "general":    group_data(df_gen),
+    }
     JSON_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     logger.info("  %s", JSON_PATH)
 
