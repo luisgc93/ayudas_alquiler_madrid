@@ -4,8 +4,7 @@ Análisis de la lista definitiva de beneficiarios y excluidos de la convocatoria
 
 El sitio interactivo está publicado en: **https://luisgc93.github.io/ayudas_alquiler_madrid/**
 
-> **Fuente:** [Preguntas frecuentes — Orden de ayudas al alquiler 2024 (CAM)](https://sede.comunidad.madrid/medias/20251216preguntasfrecuentesorden2024pdf/download)
-
+> **Fuente:** [Ayudas al alquiler de vivienda para jóvenes (CAM)](https://sede.comunidad.madrid/ayudas-becas-subvenciones/ayudas-alquiler-vivienda-jovenes)
 ---
 
 ## Metodología
