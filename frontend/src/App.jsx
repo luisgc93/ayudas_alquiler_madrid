@@ -234,16 +234,13 @@ export default function App() {
         {/* Funnel */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1">Solicitudes: admitidas vs excluidas</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-            El 61,7% de los solicitantes fueron excluidos. La tasa es algo superior en el grupo de probable origen español (63,9% frente a 60,7%).
-          </p>
-          <div className="space-y-5">
+          <div className="space-y-5 mt-6">
             {[
               { label: 'Total',      key: 'total' },
               { label: 'Español',    key: 'español' },
               { label: 'Extranjero', key: 'extranjero' },
             ].map(({ label, key }) => {
-              const f = data.funnel[key]
+              const f = data[preferenteFilter].funnel[key]
               const admPct = (f.admitted / f.total * 100).toFixed(1)
               const excPct = (f.excluded / f.total * 100).toFixed(1)
               return (

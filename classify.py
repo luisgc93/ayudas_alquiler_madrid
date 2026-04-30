@@ -213,16 +213,19 @@ def build_frontend_json() -> None:
     df_pref = df_ben[df_ben["preferente"]]
     df_gen  = df_ben[~df_ben["preferente"]]
 
-    def group_data(df):
+    df_exc_pref = df_exc[df_exc["preferente"] == True]
+    df_exc_gen  = df_exc[df_exc["preferente"] == False]
+
+    def group_data(df_adm, df_ex):
         return {
-            "pie":          build_pie_data(df),
-            "stats":        build_stats_data(df),
-            "distribution": build_distribution_data(df),
+            "pie":          build_pie_data(df_adm),
+            "stats":        build_stats_data(df_adm),
+            "distribution": build_distribution_data(df_adm),
+            "funnel":       build_funnel_data(df_adm, df_ex),
         }
 
     codes  = parse_codes(CODES_PATH)
     chart  = build_chart_data(EXCLUIDOS_OUT)
-    funnel = build_funnel_data(df_ben, df_exc)
 
     adm_records = _nan_to_none(df_ben.to_dict(orient="records"))
     exc_records = _nan_to_none(df_exc.to_dict(orient="records"))
@@ -234,15 +237,14 @@ def build_frontend_json() -> None:
     payload = {
         "chart":         chart,
         "codes":         codes,
-        "funnel":        funnel,
         "excluidos_pie": {
             "all":        build_count_pie_data(df_exc),
-            "preferente": build_count_pie_data(df_exc[df_exc["preferente"] == True]),
-            "general":    build_count_pie_data(df_exc[df_exc["preferente"] == False]),
+            "preferente": build_count_pie_data(df_exc_pref),
+            "general":    build_count_pie_data(df_exc_gen),
         },
-        "all":           group_data(df_ben),
-        "preferente":    group_data(df_pref),
-        "general":       group_data(df_gen),
+        "all":           group_data(df_ben,  df_exc),
+        "preferente":    group_data(df_pref, df_exc_pref),
+        "general":       group_data(df_gen,  df_exc_gen),
     }
     JSON_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     logger.info("  %s", JSON_PATH)
