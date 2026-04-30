@@ -296,6 +296,38 @@
       "total": 8927
     }
   },
+  "excluidos_pie": {
+    "all": [
+      {
+        "name": "Español",
+        "count": 6641
+      },
+      {
+        "name": "Extranjero",
+        "count": 5422
+      }
+    ],
+    "preferente": [
+      {
+        "name": "Español",
+        "count": 1507
+      },
+      {
+        "name": "Extranjero",
+        "count": 2450
+      }
+    ],
+    "general": [
+      {
+        "name": "Español",
+        "count": 5134
+      },
+      {
+        "name": "Extranjero",
+        "count": 2972
+      }
+    ]
+  },
   "all": {
     "pie": [
       {
