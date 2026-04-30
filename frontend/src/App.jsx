@@ -74,7 +74,16 @@ export default function App() {
         <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
           <p>
             Análisis de la lista definitiva de beneficiarios y excluidos de la convocatoria de{' '}
-            <strong className="text-gray-700 dark:text-gray-300">ayudas al alquiler para jóvenes de la Comunidad de Madrid (2024)</strong>.
+            <strong className="text-gray-700 dark:text-gray-300">ayudas al alquiler para jóvenes de la Comunidad de Madrid (2024)</strong>,
+            regulada por el{' '}
+            <a
+              href="https://www.boe.es/buscar/act.php?id=BOE-A-2022-802"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline"
+            >
+              Real Decreto 42/2022
+            </a>.
             La clasificación por origen se basa en comparar los nombres de pila de cada solicitante
             contra un dataset de nombres españoles — los solicitantes con todos sus nombres en el dataset
             se consideran de probable origen español.
