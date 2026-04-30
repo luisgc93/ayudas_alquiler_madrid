@@ -279,23 +279,6 @@
       "description": "Superación del límite presupuestario previsto en la convocatoria."
     }
   ],
-  "funnel": {
-    "total": {
-      "admitted": 7491,
-      "excluded": 12088,
-      "total": 19579
-    },
-    "español": {
-      "admitted": 3755,
-      "excluded": 6641,
-      "total": 10396
-    },
-    "extranjero": {
-      "admitted": 3505,
-      "excluded": 5422,
-      "total": 8927
-    }
-  },
   "excluidos_pie": {
     "all": [
       {
@@ -406,6 +389,23 @@
         "median": 3000.0,
         "mean": 2904.09
       }
+    },
+    "funnel": {
+      "total": {
+        "admitted": 7491,
+        "excluded": 12088,
+        "total": 19579
+      },
+      "español": {
+        "admitted": 3755,
+        "excluded": 6641,
+        "total": 10396
+      },
+      "extranjero": {
+        "admitted": 3505,
+        "excluded": 5422,
+        "total": 8927
+      }
     }
   },
   "preferente": {
@@ -486,6 +486,23 @@
         "median": 3180.0,
         "mean": 3179.23
       }
+    },
+    "funnel": {
+      "total": {
+        "admitted": 3456,
+        "excluded": 3982,
+        "total": 7438
+      },
+      "español": {
+        "admitted": 1125,
+        "excluded": 1507,
+        "total": 2632
+      },
+      "extranjero": {
+        "admitted": 2100,
+        "excluded": 2450,
+        "total": 4550
+      }
     }
   },
   "general": {
@@ -565,6 +582,23 @@
         ],
         "median": 2605.56,
         "mean": 2492.86
+      }
+    },
+    "funnel": {
+      "total": {
+        "admitted": 4035,
+        "excluded": 8106,
+        "total": 12141
+      },
+      "español": {
+        "admitted": 2630,
+        "excluded": 5134,
+        "total": 7764
+      },
+      "extranjero": {
+        "admitted": 1405,
+        "excluded": 2972,
+        "total": 4377
       }
     }
   }
