@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import ExclusionChart from './ExclusionChart'
 import CodesTable from './CodesTable'
-import OriginPieCharts from './OriginPieCharts'
+import OriginPieCharts, { ExcluidosPieChart } from './OriginPieCharts'
 import DistributionChart from './DistributionChart'
 import DataView from './DataView'
 
@@ -140,7 +140,7 @@ export default function App() {
         {mainTab === 'analisis' && <>
 
         {/* Preferente filter */}
-        <div className="flex gap-1.5">
+        <div className="sticky top-0 z-10 flex gap-1.5 py-2 bg-gray-50 dark:bg-gray-900">
           {[
             { key: 'all',        label: 'Todos' },
             { key: 'preferente', label: 'Preferentes' },
@@ -277,6 +277,9 @@ export default function App() {
             })}
           </div>
         </div>
+
+        {/* Excluidos pie */}
+        <ExcluidosPieChart pie={data.excluidos_pie[preferenteFilter]} />
 
         {/* Bar chart */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">

@@ -1,6 +1,6 @@
 # Ayudas al Alquiler CAM 2024 — Análisis de datos
 
-Análisis de la lista definitiva de beneficiarios y excluidos de la convocatoria de ayudas al alquiler para jóvenes de la Comunidad de Madrid (2024).
+Análisis de la lista definitiva de beneficiarios y excluidos de la convocatoria de ayudas al alquiler para jóvenes de la Comunidad de Madrid (2024), regulada por el [Real Decreto 42/2022](https://www.boe.es/buscar/act.php?id=BOE-A-2022-802).
 
 El sitio interactivo está publicado en: **https://luisgc93.github.io/ayudas_alquiler_madrid/**
 

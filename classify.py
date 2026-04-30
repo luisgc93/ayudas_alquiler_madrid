@@ -141,6 +141,14 @@ def build_pie_data(df: pd.DataFrame) -> list:
     return [entry("Español", True), entry("Extranjero", False)]
 
 
+def build_count_pie_data(df: pd.DataFrame) -> list:
+    counts = df["español"].value_counts()
+    return [
+        {"name": "Español",    "count": int(counts.get(True,  0))},
+        {"name": "Extranjero", "count": int(counts.get(False, 0))},
+    ]
+
+
 def build_stats_data(df: pd.DataFrame) -> dict:
     def stats(series):
         if series.empty:
@@ -224,12 +232,17 @@ def build_frontend_json() -> None:
     logger.info("  %s, %s", JSON_ADMITIDOS_PATH, JSON_EXCLUIDOS_PATH)
 
     payload = {
-        "chart":      chart,
-        "codes":      codes,
-        "funnel":     funnel,
-        "all":        group_data(df_ben),
-        "preferente": group_data(df_pref),
-        "general":    group_data(df_gen),
+        "chart":         chart,
+        "codes":         codes,
+        "funnel":        funnel,
+        "excluidos_pie": {
+            "all":        build_count_pie_data(df_exc),
+            "preferente": build_count_pie_data(df_exc[df_exc["preferente"] == True]),
+            "general":    build_count_pie_data(df_exc[df_exc["preferente"] == False]),
+        },
+        "all":           group_data(df_ben),
+        "preferente":    group_data(df_pref),
+        "general":       group_data(df_gen),
     }
     JSON_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     logger.info("  %s", JSON_PATH)

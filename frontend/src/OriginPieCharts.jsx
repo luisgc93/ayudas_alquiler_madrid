@@ -13,16 +13,20 @@ function EuroTooltip({ active, payload }) {
   )
 }
 
-function CountTooltip({ active, payload }) {
-  if (!active || !payload?.length) return null
-  const { name, value } = payload[0]
-  return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-3 text-sm">
-      <p className="font-semibold text-gray-900 dark:text-gray-100">{name}</p>
-      <p className="text-gray-600 dark:text-gray-400">{value.toLocaleString('es-ES')} beneficiarios</p>
-    </div>
-  )
+function makeCountTooltip(noun) {
+  return function CountTooltip({ active, payload }) {
+    if (!active || !payload?.length) return null
+    const { name, value } = payload[0]
+    return (
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg p-3 text-sm">
+        <p className="font-semibold text-gray-900 dark:text-gray-100">{name}</p>
+        <p className="text-gray-600 dark:text-gray-400">{value.toLocaleString('es-ES')} {noun}</p>
+      </div>
+    )
+  }
 }
+const BeneficiariosTooltip = makeCountTooltip('beneficiarios')
+const ExcluidosTooltip     = makeCountTooltip('excluidos')
 
 function SinglePie({ data, dataKey, title, TooltipComponent }) {
   const total = data.reduce((s, d) => s + d[dataKey], 0)
@@ -75,8 +79,21 @@ export default function OriginPieCharts({ pie }) {
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
       <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">Beneficiarios por origen</h2>
       <div className="flex flex-col sm:flex-row gap-6">
-        <SinglePie data={pie} dataKey="count"  title="Número de beneficiarios"    TooltipComponent={CountTooltip} />
+        <SinglePie data={pie} dataKey="count"  title="Número de beneficiarios"     TooltipComponent={BeneficiariosTooltip} />
         <SinglePie data={pie} dataKey="amount" title="Importe total de ayudas (€)" TooltipComponent={EuroTooltip} />
+      </div>
+    </div>
+  )
+}
+
+export function ExcluidosPieChart({ pie }) {
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+      <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">Excluidos por origen</h2>
+      <div className="flex justify-center">
+        <div className="w-full sm:w-1/2">
+          <SinglePie data={pie} dataKey="count" title="Número de excluidos" TooltipComponent={ExcluidosTooltip} />
+        </div>
       </div>
     </div>
   )
