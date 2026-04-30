@@ -7,7 +7,15 @@ const ADMITIDOS_COLS = [
   { accessorKey: 'nombre',     header: 'Nombre',  cell: info => <span className="font-medium">{info.getValue()}</span> },
   { accessorKey: 'nif_nie',    header: 'NIF/NIE',    meta: { hideOnMobile: true } },
   { accessorKey: 'baremo',     header: 'Baremo',     meta: { hideOnMobile: true } },
-  { accessorKey: 'ayuda',      header: 'Ayuda (€)', cell: info => <span className="tabular-nums">{info.getValue()}</span> },
+  {
+    accessorKey: 'ayuda',
+    header: 'Ayuda (€)',
+    cell: info => <span className="tabular-nums">{info.getValue()}</span>,
+    sortingFn: (rowA, rowB, columnId) => {
+      const parse = v => parseFloat(String(v).replace(/\./g, '').replace(',', '.')) || 0
+      return parse(rowA.getValue(columnId)) - parse(rowB.getValue(columnId))
+    },
+  },
   {
     accessorKey: 'español',
     header: 'Origen',
