@@ -9,7 +9,16 @@ El sitio interactivo está publicado en: **https://luisgc93.github.io/ayudas_alq
 
 ## Metodología
 
-La clasificación de origen se basa en comparar los nombres de pila de cada solicitante contra un dataset de nombres españoles (`spanish_names.csv`). Un solicitante se considera de nombre probable español cuando **todos** sus nombres de pila aparecen en el dataset. Es una heurística conservadora; los falsos negativos (nombres españoles no reconocidos) son posibles.
+La clasificación de origen combina dos criterios independientes:
+
+| Criterio | Columna | Lógica |
+|---|---|---|
+| **Nombre** | `nombre_español` | Todos los nombres de pila del solicitante aparecen en `spanish_names.csv` |
+| **NIF/NIE** | `nif_español` | El documento tiene estructura de NIF de nacional español: `***NNNN**` (vs NIE de residente: `****NNNN*`) |
+
+Un solicitante se clasifica como **español** (`español = True`) cuando **ambos** criterios se cumplen. La UI permite filtrar por cada criterio por separado.
+
+Ambas son heurísticas; los falsos negativos son posibles (p. ej. nombres españoles no incluidos en el dataset, o solicitantes con NIE que han adquirido la nacionalidad).
 
 ---
 
@@ -47,8 +56,8 @@ datos_originales/
 
 beneficiarios.csv                        # Datos en bruto de admitidos (general + preferentes, columna 'preferente')
 excluidos.csv                            # Datos en bruto de excluidos (general + preferentes, columna 'preferente')
-beneficiarios_por_nacionalidades.csv     # Admitidos con columna 'español'
-excluidos_por_nacionalidades.csv         # Excluidos con columna 'español'
+beneficiarios_por_nacionalidades.csv     # Admitidos con columnas 'nombre_español', 'nif_español', 'español'
+excluidos_por_nacionalidades.csv         # Excluidos con columnas 'nombre_español', 'nif_español', 'español'
 spanish_names.csv                        # Dataset de nombres españoles para la clasificación
 exclusion_codes.md                       # Descripción de los códigos de motivos de exclusión
 

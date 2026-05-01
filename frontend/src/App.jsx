@@ -29,6 +29,7 @@ export default function App() {
   const [highlighted, setHighlighted] = useState(null)
   const [mainTab, setMainTab] = useState('analisis')
   const [preferenteFilter, setPreferenteFilter] = useState('all')
+  const [classificationFilter, setClassificationFilter] = useState('both')
   const [dark, setDark] = useState(() => {
     const stored = localStorage.getItem('theme')
     if (stored) return stored === 'dark'
@@ -84,11 +85,24 @@ export default function App() {
             >
               Real Decreto 42/2022
             </a>.
-            La clasificación por origen se basa en comparar los nombres de pila de cada solicitante
-            contra un dataset de nombres españoles — los solicitantes con todos sus nombres en el dataset
-            se consideran de probable origen español.
           </p>
           <p>
+            La clasificación por origen combina dos criterios: que <strong className="text-gray-700 dark:text-gray-300">todos los nombres de pila</strong> aparezcan
+            en un{' '}
+            <a
+              href="https://github.com/luisgc93/ayudas_alquiler_madrid/blob/main/spanish_names.csv"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline"
+            >
+              dataset de nombres españoles
+            </a>
+            , y que el <strong className="text-gray-700 dark:text-gray-300">NIF/NIE tenga estructura de nacional español</strong>{' '}
+            (NIF: <code className="text-xs bg-gray-100 dark:bg-gray-700 px-1 rounded">***NNNN**</code> vs NIE:{' '}
+            <code className="text-xs bg-gray-100 dark:bg-gray-700 px-1 rounded">****NNNN*</code>).
+            El filtro de clasificación permite ver cada criterio por separado.
+          </p>
+          <p className="mt-3">
             Fuente:{' '}
             <a
               href="https://sede.comunidad.madrid/ayudas-becas-subvenciones/ayudas-alquiler-vivienda-jovenes"
@@ -100,13 +114,14 @@ export default function App() {
             </a>
           </p>
           <p>
+            Repositorio en GitHub:{' '}
             <a
               href="https://github.com/luisgc93/ayudas_alquiler_madrid"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-500 hover:underline"
             >
-              Código fuente
+              https://github.com/luisgc93/ayudas_alquiler_madrid
             </a>
           </p>
         </div>
@@ -133,35 +148,60 @@ export default function App() {
 
         {mainTab === 'datos' && (
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
-            <DataView baseUrl={import.meta.env.BASE_URL} />
+            <DataView baseUrl={import.meta.env.BASE_URL} classificationFilter={classificationFilter} onClassificationChange={setClassificationFilter} />
           </div>
         )}
 
         {mainTab === 'analisis' && <>
 
-        {/* Preferente filter */}
-        <div className="sticky top-0 z-10 flex gap-1.5 py-2 bg-gray-50 dark:bg-gray-900">
-          {[
-            { key: 'all',        label: 'Todos' },
-            { key: 'preferente', label: 'Preferentes' },
-            { key: 'general',    label: 'General' },
-          ].map(({ key, label }) => (
-            <button
-              key={key}
-              onClick={() => setPreferenteFilter(key)}
-              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                preferenteFilter === key
-                  ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300'
-                  : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+        {/* Filters */}
+        <div className="sticky top-0 z-10 space-y-2 py-2 -mt-4 sm:-mt-8 bg-gray-50 dark:bg-gray-900">
+          {/* Classification filter */}
+          <div className="flex gap-1.5 flex-wrap">
+            <span className="text-xs text-gray-400 dark:text-gray-500 self-center mr-1">Clasificación:</span>
+            {[
+              { key: 'both', label: 'Nombre + NIF/NIE' },
+              { key: 'name', label: 'Solo nombre' },
+              { key: 'nif',  label: 'Solo NIF/NIE' },
+            ].map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => setClassificationFilter(key)}
+                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                  classificationFilter === key
+                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+                    : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          {/* Preferente filter */}
+          <div className="flex gap-1.5 items-center">
+            <span className="text-xs text-gray-400 dark:text-gray-500 mr-1">Expedientes:</span>
+            {[
+              { key: 'all',        label: 'Todos' },
+              { key: 'preferente', label: 'Preferentes' },
+              { key: 'general',    label: 'General' },
+            ].map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => setPreferenteFilter(key)}
+                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                  preferenteFilter === key
+                    ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300'
+                    : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Pie charts */}
-        <OriginPieCharts pie={data[preferenteFilter].pie} />
+        <OriginPieCharts pie={data[classificationFilter][preferenteFilter].pie} />
 
         {/* Stats */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
@@ -184,7 +224,7 @@ export default function App() {
                   { label: 'Español',    key: 'español' },
                   { label: 'Extranjero', key: 'extranjero' },
                 ].map(({ label, key }) => {
-                  const s = data[preferenteFilter].stats[key]
+                  const s = data[classificationFilter][preferenteFilter].stats[key]
                   const fmt = (v) => v.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                   const fmtTotal = (v) => v.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
                   return (
@@ -216,7 +256,7 @@ export default function App() {
                 { label: 'Español', key: 'español' },
                 { label: 'Extranjero', key: 'extranjero' },
               ].map(({ label, key }) => {
-                const d = data[preferenteFilter].distribution[key]
+                const d = data[classificationFilter][preferenteFilter].distribution[key]
                 const fmt = v => v.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
                 return (
                   <div key={key} className="text-center">
@@ -228,7 +268,7 @@ export default function App() {
               })}
             </div>
           </div>
-          <DistributionChart distribution={data[preferenteFilter].distribution} dark={dark} />
+          <DistributionChart distribution={data[classificationFilter][preferenteFilter].distribution} dark={dark} />
         </div>
 
         {/* Funnel */}
@@ -240,7 +280,7 @@ export default function App() {
               { label: 'Español',    key: 'español' },
               { label: 'Extranjero', key: 'extranjero' },
             ].map(({ label, key }) => {
-              const f = data[preferenteFilter].funnel[key]
+              const f = data[classificationFilter][preferenteFilter].funnel[key]
               const admPct = (f.admitted / f.total * 100).toFixed(1)
               const excPct = (f.excluded / f.total * 100).toFixed(1)
               return (
@@ -276,7 +316,7 @@ export default function App() {
         </div>
 
         {/* Excluidos pie */}
-        <ExcluidosPieChart pie={data.excluidos_pie[preferenteFilter]} />
+        <ExcluidosPieChart pie={data[classificationFilter].excluidos_pie[preferenteFilter]} />
 
         {/* Bar chart */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
@@ -285,16 +325,16 @@ export default function App() {
             <p className="sm:mr-2">% de solicitantes de cada grupo excluidos por cada motivo. Un solicitante puede tener varios motivos.</p>
             <p className="flex flex-wrap items-baseline gap-x-1">
               <span className="font-medium text-gray-700 dark:text-gray-300">
-                Español: {data.chart.español.total.toLocaleString('es-ES')}
+                Español: {data[classificationFilter].chart.español.total.toLocaleString('es-ES')}
               </span>
               <span className="text-gray-400 dark:text-gray-500">·</span>
               <span className="font-medium text-gray-700 dark:text-gray-300">
-                Extranjero: {data.chart.extranjero.total.toLocaleString('es-ES')}
+                Extranjero: {data[classificationFilter].chart.extranjero.total.toLocaleString('es-ES')}
               </span>
               <span className="ml-1">Haz clic en una barra para ver el motivo.</span>
             </p>
           </div>
-          <ExclusionChart chart={data.chart} codes={data.codes} onBarClick={setHighlighted} dark={dark} />
+          <ExclusionChart chart={data[classificationFilter].chart} codes={data.codes} onBarClick={setHighlighted} dark={dark} />
         </div>
 
         {/* Codes table */}

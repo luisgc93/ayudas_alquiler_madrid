@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import DataTable from './DataTable'
 
-const ADMITIDOS_COLS = [
+const BASE_ADMITIDOS_COLS = [
   { accessorKey: 'orden',      header: 'Orden',      meta: { hideOnMobile: true } },
   { accessorKey: 'expediente', header: 'Expediente', meta: { hideOnMobile: true } },
   { accessorKey: 'nombre',     header: 'Nombre',  cell: info => <span className="font-medium">{info.getValue()}</span> },
@@ -24,22 +24,9 @@ const ADMITIDOS_COLS = [
       : <span className="inline-block px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">General</span>,
     meta: { hideOnMobile: true },
   },
-  {
-    accessorKey: 'español',
-    header: 'Origen',
-    cell: info => {
-      const val = info.getValue()
-      if (val === null || val === undefined) return ''
-      return (
-        <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-medium ${val ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300'}`}>
-          {val ? 'Español' : 'Extranjero'}
-        </span>
-      )
-    },
-  },
 ]
 
-const EXCLUIDOS_COLS = [
+const BASE_EXCLUIDOS_COLS = [
   { accessorKey: 'expediente', header: 'Expediente', meta: { hideOnMobile: true } },
   { accessorKey: 'nombre',     header: 'Nombre', cell: info => <span className="font-medium">{info.getValue()}</span> },
   { accessorKey: 'dni_nie',    header: 'DNI/NIE',    meta: { hideOnMobile: true } },
@@ -68,16 +55,27 @@ const EXCLUIDOS_COLS = [
       : <span className="inline-block px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">General</span>,
     meta: { hideOnMobile: true },
   },
-  {
-    accessorKey: 'español',
-    header: 'Origen',
-    cell: info => (
-      <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-medium ${info.getValue() ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300'}`}>
-        {info.getValue() ? 'Español' : 'Extranjero'}
-      </span>
-    ),
-  },
 ]
+
+const ORIGIN_COL_FIELD = { both: 'español', name: 'nombre_español', nif: 'nif_español' }
+
+function makeOriginCol(classificationFilter) {
+  const field = ORIGIN_COL_FIELD[classificationFilter] ?? 'español'
+  return {
+    id: 'origen',
+    header: 'Origen',
+    accessorFn: row => row[field],
+    cell: info => {
+      const val = info.getValue()
+      if (val === null || val === undefined) return ''
+      return (
+        <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-medium ${val ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300'}`}>
+          {val ? 'Español' : 'Extranjero'}
+        </span>
+      )
+    },
+  }
+}
 
 function useTableData(url) {
   const [data, setData] = useState(null)
@@ -104,7 +102,13 @@ const PREFERENTE_FILTERS = [
   { key: 'general',    label: 'General' },
 ]
 
-export default function DataView({ baseUrl }) {
+const CLASSIFICATION_FILTERS = [
+  { key: 'both', label: 'Nombre + NIF/NIE' },
+  { key: 'name', label: 'Solo nombre' },
+  { key: 'nif',  label: 'Solo NIF/NIE' },
+]
+
+export default function DataView({ baseUrl, classificationFilter = 'both', onClassificationChange }) {
   const [activeTab, setActiveTab] = useState('admitidos')
   const [preferenteFilter, setPreferenteFilter] = useState('all')
 
@@ -112,7 +116,12 @@ export default function DataView({ baseUrl }) {
   const excluidos = useTableData(`${baseUrl}excluidos.json`)
 
   const current = activeTab === 'admitidos' ? admitidos : excluidos
-  const cols    = activeTab === 'admitidos' ? ADMITIDOS_COLS : EXCLUIDOS_COLS
+  const baseCols = activeTab === 'admitidos' ? BASE_ADMITIDOS_COLS : BASE_EXCLUIDOS_COLS
+
+  const cols = useMemo(
+    () => [...baseCols, makeOriginCol(classificationFilter)],
+    [baseCols, classificationFilter],
+  )
 
   const filteredData = (() => {
     if (!current.data) return current.data
@@ -133,6 +142,24 @@ export default function DataView({ baseUrl }) {
               activeTab === key
                 ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Classification filter */}
+      <div className="flex gap-1.5 flex-wrap items-center">
+        <span className="text-xs text-gray-400 dark:text-gray-500 mr-1">Clasificación:</span>
+        {CLASSIFICATION_FILTERS.map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => onClassificationChange?.(key)}
+            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+              classificationFilter === key
+                ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+                : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
             {label}

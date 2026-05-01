@@ -59,12 +59,25 @@ def is_likely_spanish_name(full_name: str, spanish_names: set[str]) -> bool:
     return all(n in spanish_names for n in first_names)
 
 
+_NIF_PATTERN = re.compile(r"^\*{3}\d{4}\*{2}$")
+
+
+def is_spanish_nif(nif_nie: str) -> bool:
+    """Return True if nif_nie matches the masked Spanish national (NIF) structure: ***NNNN**"""
+    if not isinstance(nif_nie, str):
+        return False
+    return bool(_NIF_PATTERN.match(nif_nie.strip()))
+
+
 def classify(csv_in: Path, csv_out: Path, spanish_names: set[str]) -> None:
     df = pd.read_csv(csv_in)
-    df["español"] = df["nombre"].apply(
-        lambda n: is_likely_spanish_name(n, spanish_names) if isinstance(n, str) else None
+    id_col = "nif_nie" if "nif_nie" in df.columns else "dni_nie"
+    df["nombre_español"] = df["nombre"].apply(
+        lambda n: is_likely_spanish_name(n, spanish_names)
     )
-    spanish_count = df["español"].sum()
+    df["nif_español"] = df[id_col].apply(is_spanish_nif)
+    df["español"] = df["nombre_español"] & df["nif_español"]
+    spanish_count = int(df["español"].sum())
     logger.info(
         "%s → %d filas (español: %d, extranjero: %d)",
         csv_out, len(df), spanish_count, len(df) - spanish_count,
@@ -94,12 +107,11 @@ def _sort_key(code: str) -> tuple:
     return tuple(int(p) for p in code.split("."))
 
 
-def build_chart_data(csv_path: Path) -> dict:
-    df = pd.read_csv(csv_path)
-    group_sizes = df["español"].value_counts()
+def build_chart_data(df: pd.DataFrame, col: str = "español") -> dict:
+    group_sizes = df[col].value_counts()
 
     exploded = (
-        df[["español", "motivos"]]
+        df[[col, "motivos"]]
         .dropna(subset=["motivos"])
         .assign(motivo=lambda d: d["motivos"].str.split(r"\s*\|\s*"))
         .explode("motivo")
@@ -107,16 +119,16 @@ def build_chart_data(csv_path: Path) -> dict:
         .loc[lambda d: d["motivo"] != ""]  # drop empty strings from leading/trailing pipes
     )
     counts = (
-        exploded.groupby(["motivo", "español"])
+        exploded.groupby(["motivo", col])
         .size()
         .reset_index(name="count")
     )
     counts["rate"] = counts.apply(
-        lambda r: round(r["count"] / group_sizes[r["español"]] * 100, 1), axis=1
+        lambda r: round(r["count"] / group_sizes[r[col]] * 100, 1), axis=1
     )
 
-    pivot_count = counts.pivot(index="motivo", columns="español", values="count").fillna(0)
-    pivot_rate  = counts.pivot(index="motivo", columns="español", values="rate").fillna(0)
+    pivot_count = counts.pivot(index="motivo", columns=col, values="count").fillna(0)
+    pivot_rate  = counts.pivot(index="motivo", columns=col, values="rate").fillna(0)
     motivos = sorted(pivot_rate.index.tolist(), key=_sort_key)
 
     def series(col_bool, label):
@@ -125,15 +137,15 @@ def build_chart_data(csv_path: Path) -> dict:
             "codes":  motivos,
             "rates":  [pivot_rate.loc[m, col_bool]  if m in pivot_rate.index  else 0 for m in motivos],
             "counts": [int(pivot_count.loc[m, col_bool]) if m in pivot_count.index else 0 for m in motivos],
-            "total":  int(group_sizes[col_bool]),
+            "total":  int(group_sizes.get(col_bool, 0)),
         }
 
     return {"español": series(True, "Español"), "extranjero": series(False, "Extranjero")}
 
 
-def build_pie_data(df: pd.DataFrame) -> list:
-    counts  = df["español"].value_counts()
-    amounts = df.groupby("español")["ayuda_num"].sum()
+def build_pie_data(df: pd.DataFrame, col: str = "español") -> list:
+    counts  = df[col].value_counts()
+    amounts = df.groupby(col)["ayuda_num"].sum()
 
     def entry(label, key):
         return {"name": label, "count": int(counts.get(key, 0)), "amount": round(float(amounts.get(key, 0.0)), 2)}
@@ -141,15 +153,15 @@ def build_pie_data(df: pd.DataFrame) -> list:
     return [entry("Español", True), entry("Extranjero", False)]
 
 
-def build_count_pie_data(df: pd.DataFrame) -> list:
-    counts = df["español"].value_counts()
+def build_count_pie_data(df: pd.DataFrame, col: str = "español") -> list:
+    counts = df[col].value_counts()
     return [
         {"name": "Español",    "count": int(counts.get(True,  0))},
         {"name": "Extranjero", "count": int(counts.get(False, 0))},
     ]
 
 
-def build_stats_data(df: pd.DataFrame) -> dict:
+def build_stats_data(df: pd.DataFrame, col: str = "español") -> dict:
     def stats(series):
         if series.empty:
             return {"min": 0, "max": 0, "avg": 0, "count": 0}
@@ -162,12 +174,12 @@ def build_stats_data(df: pd.DataFrame) -> dict:
 
     return {
         "total":      stats(df["ayuda_num"]),
-        "español":    stats(df.loc[df["español"] == True,  "ayuda_num"]),
-        "extranjero": stats(df.loc[df["español"] == False, "ayuda_num"]),
+        "español":    stats(df.loc[df[col] == True,  "ayuda_num"]),
+        "extranjero": stats(df.loc[df[col] == False, "ayuda_num"]),
     }
 
 
-def build_funnel_data(adm: pd.DataFrame, exc: pd.DataFrame) -> dict:
+def build_funnel_data(adm: pd.DataFrame, exc: pd.DataFrame, col: str = "español") -> dict:
     def entry(adm_mask=None, exc_mask=None):
         n_adm = len(adm) if adm_mask is None else int(adm[adm_mask].shape[0])
         n_exc = len(exc) if exc_mask is None else int(exc[exc_mask].shape[0])
@@ -175,12 +187,12 @@ def build_funnel_data(adm: pd.DataFrame, exc: pd.DataFrame) -> dict:
 
     return {
         "total":      entry(),
-        "español":    entry(adm["español"] == True,  exc["español"] == True),
-        "extranjero": entry(adm["español"] == False, exc["español"] == False),
+        "español":    entry(adm[col] == True,  exc[col] == True),
+        "extranjero": entry(adm[col] == False, exc[col] == False),
     }
 
 
-def build_distribution_data(df: pd.DataFrame) -> dict:
+def build_distribution_data(df: pd.DataFrame, col: str = "español") -> dict:
     def group_stats(series):
         counts = []
         for i in range(len(BUCKETS) - 1):
@@ -193,8 +205,8 @@ def build_distribution_data(df: pd.DataFrame) -> dict:
     return {
         "buckets":    BUCKET_LABELS,
         "total":      group_stats(df["ayuda_num"]),
-        "español":    group_stats(df.loc[df["español"] == True,  "ayuda_num"]),
-        "extranjero": group_stats(df.loc[df["español"] == False, "ayuda_num"]),
+        "español":    group_stats(df.loc[df[col] == True,  "ayuda_num"]),
+        "extranjero": group_stats(df.loc[df[col] == False, "ayuda_num"]),
     }
 
 
@@ -210,41 +222,45 @@ def build_frontend_json() -> None:
 
     df_ben  = pd.read_csv(BENEFICIARIOS_OUT)
     df_exc  = pd.read_csv(EXCLUIDOS_OUT)
-    df_pref = df_ben[df_ben["preferente"]]
-    df_gen  = df_ben[~df_ben["preferente"]]
-
-    df_exc_pref = df_exc[df_exc["preferente"] == True]
-    df_exc_gen  = df_exc[df_exc["preferente"] == False]
-
-    def group_data(df_adm, df_ex):
-        return {
-            "pie":          build_pie_data(df_adm),
-            "stats":        build_stats_data(df_adm),
-            "distribution": build_distribution_data(df_adm),
-            "funnel":       build_funnel_data(df_adm, df_ex),
-        }
-
-    codes  = parse_codes(CODES_PATH)
-    chart  = build_chart_data(EXCLUIDOS_OUT)
 
     adm_records = _nan_to_none(df_ben.to_dict(orient="records"))
     exc_records = _nan_to_none(df_exc.to_dict(orient="records"))
-
     JSON_ADMITIDOS_PATH.write_text(json.dumps(adm_records, ensure_ascii=False), encoding="utf-8")
     JSON_EXCLUIDOS_PATH.write_text(json.dumps(exc_records, ensure_ascii=False), encoding="utf-8")
     logger.info("  %s, %s", JSON_ADMITIDOS_PATH, JSON_EXCLUIDOS_PATH)
 
+    def build_for_col(col: str) -> dict:
+        df_pref     = df_ben[df_ben["preferente"] == True]
+        df_gen      = df_ben[df_ben["preferente"] == False]
+        df_exc_pref = df_exc[df_exc["preferente"] == True]
+        df_exc_gen  = df_exc[df_exc["preferente"] == False]
+
+        def group_data(df_adm, df_ex):
+            return {
+                "pie":          build_pie_data(df_adm, col),
+                "stats":        build_stats_data(df_adm, col),
+                "distribution": build_distribution_data(df_adm, col),
+                "funnel":       build_funnel_data(df_adm, df_ex, col),
+            }
+
+        return {
+            "chart":         build_chart_data(df_exc, col),
+            "excluidos_pie": {
+                "all":        build_count_pie_data(df_exc, col),
+                "preferente": build_count_pie_data(df_exc_pref, col),
+                "general":    build_count_pie_data(df_exc_gen, col),
+            },
+            "all":        group_data(df_ben,  df_exc),
+            "preferente": group_data(df_pref, df_exc_pref),
+            "general":    group_data(df_gen,  df_exc_gen),
+        }
+
+    codes = parse_codes(CODES_PATH)
     payload = {
-        "chart":         chart,
-        "codes":         codes,
-        "excluidos_pie": {
-            "all":        build_count_pie_data(df_exc),
-            "preferente": build_count_pie_data(df_exc_pref),
-            "general":    build_count_pie_data(df_exc_gen),
-        },
-        "all":           group_data(df_ben,  df_exc),
-        "preferente":    group_data(df_pref, df_exc_pref),
-        "general":       group_data(df_gen,  df_exc_gen),
+        "codes": codes,
+        "both":  build_for_col("español"),
+        "name":  build_for_col("nombre_español"),
+        "nif":   build_for_col("nif_español"),
     }
     JSON_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     logger.info("  %s", JSON_PATH)
