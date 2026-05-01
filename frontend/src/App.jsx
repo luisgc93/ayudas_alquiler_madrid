@@ -72,7 +72,7 @@ export default function App() {
         </div>
 
         {/* Description */}
-        <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+        <div className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
           <p>
             Análisis de la lista definitiva de beneficiarios y excluidos de la convocatoria de{' '}
             <strong className="text-gray-700 dark:text-gray-300">ayudas al alquiler para jóvenes de la Comunidad de Madrid (2024)</strong>,
@@ -85,6 +85,12 @@ export default function App() {
             >
               Real Decreto 42/2022
             </a>.
+          </p>
+          <p>
+            El origen es un factor social que determina parcialmente nuestra cultura, opiniones y forma de ver el mundo.
+            Es por tanto un factor digno de estudio a tener en cuenta en cualquier análisis como lo puede ser el de la concesión de ayudas del estado.
+            Un análisis transparente protege a la ciudadanía de discursos del odio, afirmaciones infundadas u opacas,
+            y en definitiva contribuye a una discusión política más honesta.
           </p>
           <p>
             La clasificación por origen combina dos criterios: que <strong className="text-gray-700 dark:text-gray-300">todos los nombres de pila</strong> aparezcan
@@ -148,7 +154,7 @@ export default function App() {
 
         {mainTab === 'datos' && (
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
-            <DataView baseUrl={import.meta.env.BASE_URL} classificationFilter={classificationFilter} onClassificationChange={setClassificationFilter} />
+            <DataView baseUrl={import.meta.env.BASE_URL} />
           </div>
         )}
 

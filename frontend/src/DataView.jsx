@@ -3,10 +3,8 @@ import DataTable from './DataTable'
 
 const BASE_ADMITIDOS_COLS = [
   { accessorKey: 'orden',      header: 'Orden',      meta: { hideOnMobile: true } },
-  { accessorKey: 'expediente', header: 'Expediente', meta: { hideOnMobile: true } },
   { accessorKey: 'nombre',     header: 'Nombre',  cell: info => <span className="font-medium">{info.getValue()}</span> },
   { accessorKey: 'nif_nie',    header: 'NIF/NIE',    meta: { hideOnMobile: true } },
-  { accessorKey: 'baremo',     header: 'Baremo',     meta: { hideOnMobile: true } },
   {
     accessorKey: 'ayuda',
     header: 'Ayuda (€)',
@@ -15,6 +13,20 @@ const BASE_ADMITIDOS_COLS = [
       const parse = v => parseFloat(String(v).replace(/\./g, '').replace(',', '.')) || 0
       return parse(rowA.getValue(columnId)) - parse(rowB.getValue(columnId))
     },
+  },
+  {
+    accessorKey: 'nacionalidad',
+    header: 'Nacionalidad',
+    cell: info => {
+      const val = info.getValue()
+      if (!val) return '—'
+      return (
+        <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-medium ${val === 'Española' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300'}`}>
+          {val}
+        </span>
+      )
+    },
+    meta: { hideOnMobile: true },
   },
   {
     accessorKey: 'preferente',
@@ -27,9 +39,22 @@ const BASE_ADMITIDOS_COLS = [
 ]
 
 const BASE_EXCLUIDOS_COLS = [
-  { accessorKey: 'expediente', header: 'Expediente', meta: { hideOnMobile: true } },
   { accessorKey: 'nombre',     header: 'Nombre', cell: info => <span className="font-medium">{info.getValue()}</span> },
   { accessorKey: 'dni_nie',    header: 'DNI/NIE',    meta: { hideOnMobile: true } },
+  {
+    accessorKey: 'nacionalidad',
+    header: 'Nacionalidad',
+    cell: info => {
+      const val = info.getValue()
+      if (!val) return '—'
+      return (
+        <span className={`inline-block px-1.5 py-0.5 rounded text-xs font-medium ${val === 'Española' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' : 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300'}`}>
+          {val}
+        </span>
+      )
+    },
+    meta: { hideOnMobile: true },
+  },
   {
     accessorKey: 'motivos',
     header: 'Motivos',
@@ -102,13 +127,8 @@ const PREFERENTE_FILTERS = [
   { key: 'general',    label: 'General' },
 ]
 
-const CLASSIFICATION_FILTERS = [
-  { key: 'both', label: 'Nombre + NIF/NIE' },
-  { key: 'name', label: 'Solo nombre' },
-  { key: 'nif',  label: 'Solo NIF/NIE' },
-]
 
-export default function DataView({ baseUrl, classificationFilter = 'both', onClassificationChange }) {
+export default function DataView({ baseUrl }) {
   const [activeTab, setActiveTab] = useState('admitidos')
   const [preferenteFilter, setPreferenteFilter] = useState('all')
 
@@ -118,10 +138,12 @@ export default function DataView({ baseUrl, classificationFilter = 'both', onCla
   const current = activeTab === 'admitidos' ? admitidos : excluidos
   const baseCols = activeTab === 'admitidos' ? BASE_ADMITIDOS_COLS : BASE_EXCLUIDOS_COLS
 
-  const cols = useMemo(
-    () => [...baseCols, makeOriginCol(classificationFilter)],
-    [baseCols, classificationFilter],
-  )
+  const cols = useMemo(() => {
+    const originCol = makeOriginCol('both')
+    const idx = baseCols.findIndex(c => c.accessorKey === 'nacionalidad')
+    if (idx === -1) return [...baseCols, originCol]
+    return [...baseCols.slice(0, idx + 1), originCol, ...baseCols.slice(idx + 1)]
+  }, [baseCols])
 
   const filteredData = (() => {
     if (!current.data) return current.data
@@ -142,24 +164,6 @@ export default function DataView({ baseUrl, classificationFilter = 'both', onCla
               activeTab === key
                 ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {/* Classification filter */}
-      <div className="flex gap-1.5 flex-wrap items-center">
-        <span className="text-xs text-gray-400 dark:text-gray-500 mr-1">Clasificación:</span>
-        {CLASSIFICATION_FILTERS.map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => onClassificationChange?.(key)}
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-              classificationFilter === key
-                ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
-                : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
             {label}
