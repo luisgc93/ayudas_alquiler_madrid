@@ -60,7 +60,7 @@ export default function App() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <h1 className="text-lg sm:text-2xl font-semibold text-gray-900 dark:text-gray-100">
-            Ayudas al alquiler CAM 2024
+            Ayudas al Alquiler CAM 2024 — Análisis de datos
           </h1>
           <button
             onClick={() => setDark(d => !d)}
@@ -86,6 +86,7 @@ export default function App() {
               Real Decreto 42/2022
             </a>.
           </p>
+          <h2 className="text-base font-semibold text-gray-800 dark:text-gray-200">Por qué este análisis</h2>
           <p>
             El origen es un factor social que determina parcialmente nuestra cultura, opiniones y forma de ver el mundo.
             Es por tanto un factor digno de estudio a tener en cuenta en cualquier análisis como lo puede ser el de la concesión de ayudas del estado.
@@ -108,8 +109,8 @@ export default function App() {
             <code className="text-xs bg-gray-100 dark:bg-gray-700 px-1 rounded">****NNNN*</code>).
             El filtro de clasificación permite ver cada criterio por separado.
           </p>
-          <p className="mt-3">
-            Fuente:{' '}
+          <h2 className="text-base font-semibold text-gray-800 dark:text-gray-200">Fuentes</h2>
+          <p>
             <a
               href="https://sede.comunidad.madrid/ayudas-becas-subvenciones/ayudas-alquiler-vivienda-jovenes"
               target="_blank"
