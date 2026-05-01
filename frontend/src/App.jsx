@@ -93,6 +93,7 @@ export default function App() {
             Un análisis transparente protege a la ciudadanía de discursos del odio, afirmaciones infundadas u opacas,
             y en definitiva contribuye a una discusión política más honesta.
           </p>
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mt-4 mb-2">Metodología</h3>
           <p>
             La clasificación por origen combina dos criterios: que <strong className="text-gray-700 dark:text-gray-300">todos los nombres de pila</strong> aparezcan
             en un{' '}
