@@ -5,6 +5,15 @@ Análisis de la lista definitiva de beneficiarios y excluidos de la convocatoria
 El sitio interactivo está publicado en: **https://luisgc93.github.io/ayudas_alquiler_madrid/**
 
 > **Fuente:** [Ayudas al alquiler de vivienda para jóvenes (CAM)](https://sede.comunidad.madrid/ayudas-becas-subvenciones/ayudas-alquiler-vivienda-jovenes)
+
+---
+
+## Por qué este análisis
+
+El origen es un factor social que determina parcialmente nuestra cultura, opiniones y forma de ver el mundo. Es por tanto un factor digno de estudio a tener en cuenta en cualquier análisis social como lo puede ser el de las ayudas del estado.
+
+Un análisis transparente protege a la ciudadanía de discursos del odio, afirmaciones infundadas u opacas, y en definitiva contribuye a una discusión política más honesta.
+
 ---
 
 ## Metodología

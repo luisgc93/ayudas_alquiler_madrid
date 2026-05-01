@@ -77,6 +77,7 @@ def classify(csv_in: Path, csv_out: Path, spanish_names: set[str]) -> None:
     )
     df["nif_español"] = df[id_col].apply(is_spanish_nif)
     df["español"] = df["nombre_español"] & df["nif_español"]
+    df["nacionalidad"] = df["nif_español"].map({True: "Española", False: "Extranjera"})
     spanish_count = int(df["español"].sum())
     logger.info(
         "%s → %d filas (español: %d, extranjero: %d)",
