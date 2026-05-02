@@ -1,6 +1,6 @@
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
-const COLORS = { 'Español': '#3b82f6', 'Extranjero': '#f97316' }
+const COLORS = { 'Español': '#3b82f6', 'Extranjero': '#f97316', 'Sin clasificar': '#6b7280' }
 
 function EuroTooltip({ active, payload }) {
   if (!active || !payload?.length) return null

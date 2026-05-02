@@ -5,6 +5,7 @@ import {
 
 const COLOR_ES = '#3b82f6'   // blue-500
 const COLOR_EX = '#f97316'   // orange-500
+const COLOR_SC = '#6b7280'   // gray-500
 
 function CustomTooltip({ active, payload, label, codes }) {
   if (!active || !payload?.length) return null
@@ -19,7 +20,7 @@ function CustomTooltip({ active, payload, label, codes }) {
         <p key={p.name} style={{ color: p.fill }} className="font-medium">
           {p.name}: {p.value}%
           <span className="text-gray-400 dark:text-gray-500 font-normal ml-1">
-            ({p.payload[p.name === 'Español' ? 'countEs' : 'countEx'].toLocaleString('es-ES')} solicitantes)
+            ({p.payload.counts[p.name].toLocaleString('es-ES')} solicitantes)
           </span>
         </p>
       ))}
@@ -28,14 +29,14 @@ function CustomTooltip({ active, payload, label, codes }) {
 }
 
 export default function ExclusionChart({ chart, onBarClick, codes = [], dark = false }) {
-  const { español: es, extranjero: ex } = chart
+  const { español: es, extranjero: ex, sin_clasificar: sc } = chart
 
   const chartData = es.codes.map((code, i) => ({
     code,
     Español: es.rates[i],
     Extranjero: ex.rates[i],
-    countEs: es.counts[i],
-    countEx: ex.counts[i],
+    'Sin clasificar': sc.rates[i],
+    counts: { Español: es.counts[i], Extranjero: ex.counts[i], 'Sin clasificar': sc.counts[i] },
   }))
 
   const tickColor  = dark ? '#9ca3af' : '#6b7280'
@@ -78,6 +79,7 @@ export default function ExclusionChart({ chart, onBarClick, codes = [], dark = f
         />
         <Bar dataKey="Español" fill={COLOR_ES} radius={[3, 3, 0, 0]} />
         <Bar dataKey="Extranjero" fill={COLOR_EX} radius={[3, 3, 0, 0]} />
+        <Bar dataKey="Sin clasificar" fill={COLOR_SC} radius={[3, 3, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   )

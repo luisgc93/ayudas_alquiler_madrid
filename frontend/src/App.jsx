@@ -228,9 +228,10 @@ export default function App() {
               </thead>
               <tbody className="divide-y divide-gray-50 dark:divide-gray-700">
                 {[
-                  { label: 'Total',      key: 'total' },
-                  { label: 'Español',    key: 'español' },
-                  { label: 'Extranjero', key: 'extranjero' },
+                  { label: 'Total',          key: 'total' },
+                  { label: 'Español',        key: 'español' },
+                  { label: 'Extranjero',     key: 'extranjero' },
+                  { label: 'Sin clasificar', key: 'sin_clasificar' },
                 ].map(({ label, key }) => {
                   const s = data[classificationFilter][preferenteFilter].stats[key]
                   const fmt = (v) => v.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -260,9 +261,10 @@ export default function App() {
             </p>
             <div className="flex gap-6 text-sm">
               {[
-                { label: 'Total', key: 'total' },
-                { label: 'Español', key: 'español' },
-                { label: 'Extranjero', key: 'extranjero' },
+                { label: 'Total',          key: 'total' },
+                { label: 'Español',        key: 'español' },
+                { label: 'Extranjero',     key: 'extranjero' },
+                { label: 'Sin clasificar', key: 'sin_clasificar' },
               ].map(({ label, key }) => {
                 const d = data[classificationFilter][preferenteFilter].distribution[key]
                 const fmt = v => v.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
@@ -284,9 +286,10 @@ export default function App() {
           <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1">Solicitudes: admitidas vs excluidas</h2>
           <div className="space-y-5 mt-6">
             {[
-              { label: 'Total',      key: 'total' },
-              { label: 'Español',    key: 'español' },
-              { label: 'Extranjero', key: 'extranjero' },
+              { label: 'Total',          key: 'total' },
+              { label: 'Español',        key: 'español' },
+              { label: 'Extranjero',     key: 'extranjero' },
+              { label: 'Sin clasificar', key: 'sin_clasificar' },
             ].map(({ label, key }) => {
               const f = data[classificationFilter][preferenteFilter].funnel[key]
               const admPct = (f.admitted / f.total * 100).toFixed(1)
@@ -338,6 +341,10 @@ export default function App() {
               <span className="text-gray-400 dark:text-gray-500">·</span>
               <span className="font-medium text-gray-700 dark:text-gray-300">
                 Extranjero: {data[classificationFilter].chart.extranjero.total.toLocaleString('es-ES')}
+              </span>
+              <span className="text-gray-400 dark:text-gray-500">·</span>
+              <span className="font-medium text-gray-700 dark:text-gray-300">
+                Sin clasificar: {data[classificationFilter].chart.sin_clasificar.total.toLocaleString('es-ES')}
               </span>
               <span className="ml-1">Haz clic en una barra para ver el motivo.</span>
             </p>

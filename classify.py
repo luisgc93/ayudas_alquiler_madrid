@@ -28,6 +28,9 @@ JSON_EXCLUIDOS_PATH = Path("frontend/public/excluidos.json")
 BUCKETS       = [0, 500, 1000, 2000, 3000, 4000, 5400.01]
 BUCKET_LABELS = ["0–500", "500–1k", "1k–2k", "2k–3k", "3k–4k", "4k–5.4k"]
 
+# Sentinel used internally so pandas groupby doesn't silently drop null rows
+_NULL_KEY = "__sin_clasificar__"
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -43,10 +46,11 @@ def load_spanish_names(csv_path: Path) -> set[str]:
     return set(df["name"].str.strip().str.lower())
 
 
-def is_likely_spanish_name(full_name: str, spanish_names: set[str]) -> bool:
-    """All first names must be in the Spanish names dataset."""
+def is_likely_spanish_name(full_name: str, spanish_names: set[str]) -> bool | None:
+    """All first names must be in the Spanish names dataset.
+    Returns None when the name field is missing (cannot classify)."""
     if not isinstance(full_name, str):
-        return False
+        return None
     try:
         _, first_names_part = full_name.split(",", maxsplit=1)
     except ValueError:
@@ -62,11 +66,22 @@ def is_likely_spanish_name(full_name: str, spanish_names: set[str]) -> bool:
 _NIF_PATTERN = re.compile(r"^\*{3}\d{4}\*{2}$")
 
 
-def is_spanish_nif(nif_nie: str) -> bool:
-    """Return True if nif_nie matches the masked Spanish national (NIF) structure: ***NNNN**"""
+def is_spanish_nif(nif_nie: str) -> bool | None:
+    """Return True if nif_nie matches the masked Spanish national (NIF) structure: ***NNNN**
+    Returns None when the nif/nie field is missing (cannot classify)."""
     if not isinstance(nif_nie, str):
-        return False
+        return None
     return bool(_NIF_PATTERN.match(nif_nie.strip()))
+
+
+def _combine_español(nombre_esp, nif_esp) -> bool | None:
+    """Combine name and NIF signals into a single classification.
+    Returns None only when both signals are missing (cannot classify)."""
+    nombre_missing = nombre_esp is None or (isinstance(nombre_esp, float) and math.isnan(nombre_esp))
+    nif_missing    = nif_esp    is None or (isinstance(nif_esp,    float) and math.isnan(nif_esp))
+    if nombre_missing and nif_missing:
+        return None
+    return (nombre_esp is True) and (nif_esp is True)
 
 
 def classify(csv_in: Path, csv_out: Path, spanish_names: set[str]) -> None:
@@ -76,12 +91,16 @@ def classify(csv_in: Path, csv_out: Path, spanish_names: set[str]) -> None:
         lambda n: is_likely_spanish_name(n, spanish_names)
     )
     df["nif_español"] = df[id_col].apply(is_spanish_nif)
-    df["español"] = df["nombre_español"] & df["nif_español"]
+    df["español"] = df.apply(
+        lambda row: _combine_español(row["nombre_español"], row["nif_español"]), axis=1
+    )
     df["nacionalidad"] = df["nif_español"].map({True: "Española", False: "Extranjera"})
-    spanish_count = int(df["español"].sum())
+    spanish_count = int((df["español"] == True).sum())
+    foreign_count = int((df["español"] == False).sum())
+    unknown_count = int(df["español"].isna().sum())
     logger.info(
-        "%s → %d filas (español: %d, extranjero: %d)",
-        csv_out, len(df), spanish_count, len(df) - spanish_count,
+        "%s → %d filas (español: %d, extranjero: %d, sin clasificar: %d)",
+        csv_out, len(df), spanish_count, foreign_count, unknown_count,
     )
     df.to_csv(csv_out, index=False, encoding="utf-8-sig")
 
@@ -108,11 +127,20 @@ def _sort_key(code: str) -> tuple:
     return tuple(int(p) for p in code.split("."))
 
 
+def _fill_null(series: pd.Series) -> pd.Series:
+    """Replace None/NaN with sentinel so groupby doesn't silently drop nulls."""
+    return series.map(lambda x: _NULL_KEY if pd.isna(x) else x)
+
+
 def build_chart_data(df: pd.DataFrame, col: str = "español") -> dict:
-    group_sizes = df[col].value_counts()
+    filled = _fill_null(df[col])
+    group_sizes = filled.value_counts()
+
+    work = df[["motivos"]].copy()
+    work[col] = filled
 
     exploded = (
-        df[[col, "motivos"]]
+        work
         .dropna(subset=["motivos"])
         .assign(motivo=lambda d: d["motivos"].str.split(r"\s*\|\s*"))
         .explode("motivo")
@@ -132,33 +160,44 @@ def build_chart_data(df: pd.DataFrame, col: str = "español") -> dict:
     pivot_rate  = counts.pivot(index="motivo", columns=col, values="rate").fillna(0)
     motivos = sorted(pivot_rate.index.tolist(), key=_sort_key)
 
-    def series(col_bool, label):
+    def series(col_val, label):
         return {
             "label":  label,
             "codes":  motivos,
-            "rates":  [pivot_rate.loc[m, col_bool]  if m in pivot_rate.index  else 0 for m in motivos],
-            "counts": [int(pivot_count.loc[m, col_bool]) if m in pivot_count.index else 0 for m in motivos],
-            "total":  int(group_sizes.get(col_bool, 0)),
+            "rates":  [pivot_rate.loc[m, col_val]  if m in pivot_rate.index  and col_val in pivot_rate.columns  else 0 for m in motivos],
+            "counts": [int(pivot_count.loc[m, col_val]) if m in pivot_count.index and col_val in pivot_count.columns else 0 for m in motivos],
+            "total":  int(group_sizes.get(col_val, 0)),
         }
 
-    return {"español": series(True, "Español"), "extranjero": series(False, "Extranjero")}
+    return {
+        "español":        series(True,      "Español"),
+        "extranjero":     series(False,     "Extranjero"),
+        "sin_clasificar": series(_NULL_KEY, "Sin clasificar"),
+    }
 
 
 def build_pie_data(df: pd.DataFrame, col: str = "español") -> list:
     counts  = df[col].value_counts()
     amounts = df.groupby(col)["ayuda_num"].sum()
+    null_count  = int(df[col].isna().sum())
+    null_amount = round(float(df.loc[df[col].isna(), "ayuda_num"].sum()), 2)
 
     def entry(label, key):
         return {"name": label, "count": int(counts.get(key, 0)), "amount": round(float(amounts.get(key, 0.0)), 2)}
 
-    return [entry("Español", True), entry("Extranjero", False)]
+    return [
+        entry("Español", True),
+        entry("Extranjero", False),
+        {"name": "Sin clasificar", "count": null_count, "amount": null_amount},
+    ]
 
 
 def build_count_pie_data(df: pd.DataFrame, col: str = "español") -> list:
     counts = df[col].value_counts()
     return [
-        {"name": "Español",    "count": int(counts.get(True,  0))},
-        {"name": "Extranjero", "count": int(counts.get(False, 0))},
+        {"name": "Español",        "count": int(counts.get(True,  0))},
+        {"name": "Extranjero",     "count": int(counts.get(False, 0))},
+        {"name": "Sin clasificar", "count": int(df[col].isna().sum())},
     ]
 
 
@@ -174,9 +213,10 @@ def build_stats_data(df: pd.DataFrame, col: str = "español") -> dict:
         }
 
     return {
-        "total":      stats(df["ayuda_num"]),
-        "español":    stats(df.loc[df[col] == True,  "ayuda_num"]),
-        "extranjero": stats(df.loc[df[col] == False, "ayuda_num"]),
+        "total":          stats(df["ayuda_num"]),
+        "español":        stats(df.loc[df[col] == True,  "ayuda_num"]),
+        "extranjero":     stats(df.loc[df[col] == False, "ayuda_num"]),
+        "sin_clasificar": stats(df.loc[df[col].isna(),   "ayuda_num"]),
     }
 
 
@@ -187,9 +227,10 @@ def build_funnel_data(adm: pd.DataFrame, exc: pd.DataFrame, col: str = "español
         return {"admitted": n_adm, "excluded": n_exc, "total": n_adm + n_exc}
 
     return {
-        "total":      entry(),
-        "español":    entry(adm[col] == True,  exc[col] == True),
-        "extranjero": entry(adm[col] == False, exc[col] == False),
+        "total":          entry(),
+        "español":        entry(adm[col] == True,  exc[col] == True),
+        "extranjero":     entry(adm[col] == False, exc[col] == False),
+        "sin_clasificar": entry(adm[col].isna(),   exc[col].isna()),
     }
 
 
@@ -204,10 +245,11 @@ def build_distribution_data(df: pd.DataFrame, col: str = "español") -> dict:
         return {"counts": counts, "median": median, "mean": mean}
 
     return {
-        "buckets":    BUCKET_LABELS,
-        "total":      group_stats(df["ayuda_num"]),
-        "español":    group_stats(df.loc[df[col] == True,  "ayuda_num"]),
-        "extranjero": group_stats(df.loc[df[col] == False, "ayuda_num"]),
+        "buckets":        BUCKET_LABELS,
+        "total":          group_stats(df["ayuda_num"]),
+        "español":        group_stats(df.loc[df[col] == True,  "ayuda_num"]),
+        "extranjero":     group_stats(df.loc[df[col] == False, "ayuda_num"]),
+        "sin_clasificar": group_stats(df.loc[df[col].isna(),   "ayuda_num"]),
     }
 
 

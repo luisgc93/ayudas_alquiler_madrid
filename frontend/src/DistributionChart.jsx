@@ -5,6 +5,7 @@ import {
 
 const COLOR_ES = '#3b82f6'
 const COLOR_EX = '#f97316'
+const COLOR_SC = '#6b7280'
 
 function CustomTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
@@ -21,12 +22,13 @@ function CustomTooltip({ active, payload, label }) {
 }
 
 export default function DistributionChart({ distribution, dark = false }) {
-  const { buckets, español: es, extranjero: ex } = distribution
+  const { buckets, español: es, extranjero: ex, sin_clasificar: sc } = distribution
 
   const chartData = buckets.map((bucket, i) => ({
     bucket,
     Español: es.counts[i],
     Extranjero: ex.counts[i],
+    'Sin clasificar': sc.counts[i],
   }))
 
   const tickColor   = dark ? '#9ca3af' : '#6b7280'
@@ -67,6 +69,7 @@ export default function DistributionChart({ distribution, dark = false }) {
         />
         <Bar dataKey="Español" fill={COLOR_ES} radius={[3, 3, 0, 0]} />
         <Bar dataKey="Extranjero" fill={COLOR_EX} radius={[3, 3, 0, 0]} />
+        <Bar dataKey="Sin clasificar" fill={COLOR_SC} radius={[3, 3, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   )

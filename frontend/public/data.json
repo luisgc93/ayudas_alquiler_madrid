@@ -222,32 +222,32 @@
           "13"
         ],
         "rates": [
-          13.1,
-          10.9,
+          13.2,
+          11.0,
           0.5,
           0.9,
           0.3,
           1.6,
-          22.3,
-          6.4,
+          22.4,
+          6.5,
           1.8,
           9.1,
           1.0,
           2.9,
           7.6,
-          3.1,
+          3.2,
           1.4,
-          32.6,
-          26.2,
-          27.7,
-          48.4,
-          41.5,
-          11.5,
-          12.0,
+          32.7,
+          26.3,
+          27.8,
+          48.6,
+          41.7,
+          11.6,
+          12.1,
           0.8,
           0.7,
-          6.5,
-          1.6
+          6.6,
+          1.1
         ],
         "counts": [
           779,
@@ -275,9 +275,97 @@
           49,
           40,
           388,
-          93
+          68
         ],
-        "total": 5943
+        "total": 5918
+      },
+      "sin_clasificar": {
+        "label": "Sin clasificar",
+        "codes": [
+          "1.1",
+          "1.2",
+          "1.2.1",
+          "1.2.2",
+          "1.2.5",
+          "1.2.6",
+          "2.1",
+          "2.2",
+          "2.3",
+          "3",
+          "4.1",
+          "4.2",
+          "4.3",
+          "4.4",
+          "4.5",
+          "4.6",
+          "4.7",
+          "5",
+          "6",
+          "7.1",
+          "7.2",
+          "7.3",
+          "8",
+          "10",
+          "11",
+          "13"
+        ],
+        "rates": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          100.0
+        ],
+        "counts": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          25
+        ],
+        "total": 25
       }
     },
     "excluidos_pie": {
@@ -288,7 +376,11 @@
         },
         {
           "name": "Extranjero",
-          "count": 5943
+          "count": 5918
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 25
         }
       ],
       "preferente": [
@@ -298,7 +390,11 @@
         },
         {
           "name": "Extranjero",
-          "count": 2605
+          "count": 2580
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 25
         }
       ],
       "general": [
@@ -309,6 +405,10 @@
         {
           "name": "Extranjero",
           "count": 3338
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 0
         }
       ]
     },
@@ -321,8 +421,13 @@
         },
         {
           "name": "Extranjero",
-          "count": 3908,
-          "amount": 11404326.89
+          "count": 3677,
+          "amount": 10653026.71
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 231,
+          "amount": 751300.18
         }
       ],
       "stats": {
@@ -341,8 +446,14 @@
         "extranjero": {
           "min": 22.5,
           "max": 5400.0,
-          "avg": 2918.2,
-          "count": 3908
+          "avg": 2897.21,
+          "count": 3677
+        },
+        "sin_clasificar": {
+          "min": 237.5,
+          "max": 5214.0,
+          "avg": 3252.38,
+          "count": 231
         }
       },
       "distribution": {
@@ -380,15 +491,27 @@
         },
         "extranjero": {
           "counts": [
-            204,
-            218,
-            416,
-            905,
-            1452,
-            713
+            203,
+            213,
+            392,
+            858,
+            1360,
+            651
           ],
-          "median": 3004.98,
-          "mean": 2918.2
+          "median": 3000.0,
+          "mean": 2897.21
+        },
+        "sin_clasificar": {
+          "counts": [
+            1,
+            5,
+            24,
+            47,
+            92,
+            62
+          ],
+          "median": 3360.0,
+          "mean": 3252.38
         }
       },
       "funnel": {
@@ -403,9 +526,14 @@
           "total": 9728
         },
         "extranjero": {
-          "admitted": 3908,
-          "excluded": 5943,
-          "total": 9851
+          "admitted": 3677,
+          "excluded": 5918,
+          "total": 9595
+        },
+        "sin_clasificar": {
+          "admitted": 231,
+          "excluded": 25,
+          "total": 256
         }
       }
     },
@@ -418,8 +546,13 @@
         },
         {
           "name": "Extranjero",
-          "count": 2403,
-          "amount": 7660415.83
+          "count": 2172,
+          "amount": 6909115.65
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 231,
+          "amount": 751300.18
         }
       ],
       "stats": {
@@ -438,8 +571,14 @@
         "extranjero": {
           "min": 82.33,
           "max": 5400.0,
-          "avg": 3187.86,
-          "count": 2403
+          "avg": 3180.99,
+          "count": 2172
+        },
+        "sin_clasificar": {
+          "min": 237.5,
+          "max": 5214.0,
+          "avg": 3252.38,
+          "count": 231
         }
       },
       "distribution": {
@@ -477,15 +616,27 @@
         },
         "extranjero": {
           "counts": [
-            20,
-            33,
-            187,
-            642,
-            1068,
-            453
+            19,
+            28,
+            163,
+            595,
+            976,
+            391
           ],
-          "median": 3208.68,
-          "mean": 3187.86
+          "median": 3180.0,
+          "mean": 3180.99
+        },
+        "sin_clasificar": {
+          "counts": [
+            1,
+            5,
+            24,
+            47,
+            92,
+            62
+          ],
+          "median": 3360.0,
+          "mean": 3252.38
         }
       },
       "funnel": {
@@ -500,9 +651,14 @@
           "total": 2430
         },
         "extranjero": {
-          "admitted": 2403,
-          "excluded": 2605,
-          "total": 5008
+          "admitted": 2172,
+          "excluded": 2580,
+          "total": 4752
+        },
+        "sin_clasificar": {
+          "admitted": 231,
+          "excluded": 25,
+          "total": 256
         }
       }
     },
@@ -517,6 +673,11 @@
           "name": "Extranjero",
           "count": 1505,
           "amount": 3743911.06
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 0,
+          "amount": 0.0
         }
       ],
       "stats": {
@@ -537,6 +698,12 @@
           "max": 5400.0,
           "avg": 2487.65,
           "count": 1505
+        },
+        "sin_clasificar": {
+          "min": 0,
+          "max": 0,
+          "avg": 0,
+          "count": 0
         }
       },
       "distribution": {
@@ -583,6 +750,18 @@
           ],
           "median": 2572.5,
           "mean": 2487.65
+        },
+        "sin_clasificar": {
+          "counts": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "median": 0,
+          "mean": 0
         }
       },
       "funnel": {
@@ -600,6 +779,11 @@
           "admitted": 1505,
           "excluded": 3338,
           "total": 4843
+        },
+        "sin_clasificar": {
+          "admitted": 0,
+          "excluded": 0,
+          "total": 0
         }
       }
     }
@@ -725,32 +909,32 @@
           "13"
         ],
         "rates": [
-          12.5,
+          12.6,
           11.1,
           0.5,
           1.0,
           0.3,
           1.7,
-          22.1,
-          6.2,
+          22.2,
+          6.3,
           1.6,
-          8.6,
+          8.7,
           0.9,
           2.8,
           7.5,
           2.9,
           1.3,
-          31.9,
-          25.6,
-          26.7,
-          48.2,
-          40.7,
+          32.1,
+          25.7,
+          26.8,
+          48.4,
+          40.9,
           11.9,
           12.3,
           0.8,
           0.7,
           6.3,
-          1.7
+          1.3
         ],
         "counts": [
           682,
@@ -778,9 +962,97 @@
           43,
           39,
           342,
-          93
+          68
         ],
-        "total": 5447
+        "total": 5422
+      },
+      "sin_clasificar": {
+        "label": "Sin clasificar",
+        "codes": [
+          "1.1",
+          "1.2",
+          "1.2.1",
+          "1.2.2",
+          "1.2.5",
+          "1.2.6",
+          "2.1",
+          "2.2",
+          "2.3",
+          "3",
+          "4.1",
+          "4.2",
+          "4.3",
+          "4.4",
+          "4.5",
+          "4.6",
+          "4.7",
+          "5",
+          "6",
+          "7.1",
+          "7.2",
+          "7.3",
+          "8",
+          "10",
+          "11",
+          "13"
+        ],
+        "rates": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          100.0
+        ],
+        "counts": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          25
+        ],
+        "total": 25
       }
     },
     "excluidos_pie": {
@@ -791,7 +1063,11 @@
         },
         {
           "name": "Extranjero",
-          "count": 5447
+          "count": 5422
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 25
         }
       ],
       "preferente": [
@@ -801,7 +1077,11 @@
         },
         {
           "name": "Extranjero",
-          "count": 2475
+          "count": 2450
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 25
         }
       ],
       "general": [
@@ -812,6 +1092,10 @@
         {
           "name": "Extranjero",
           "count": 2972
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 0
         }
       ]
     },
@@ -824,8 +1108,13 @@
         },
         {
           "name": "Extranjero",
-          "count": 3736,
-          "amount": 10930151.16
+          "count": 3505,
+          "amount": 10178850.98
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 231,
+          "amount": 751300.18
         }
       ],
       "stats": {
@@ -844,8 +1133,14 @@
         "extranjero": {
           "min": 22.5,
           "max": 5400.0,
-          "avg": 2925.63,
-          "count": 3736
+          "avg": 2904.09,
+          "count": 3505
+        },
+        "sin_clasificar": {
+          "min": 237.5,
+          "max": 5214.0,
+          "avg": 3252.38,
+          "count": 231
         }
       },
       "distribution": {
@@ -883,15 +1178,27 @@
         },
         "extranjero": {
           "counts": [
-            183,
-            204,
-            399,
-            872,
-            1410,
-            668
+            182,
+            199,
+            375,
+            825,
+            1318,
+            606
           ],
-          "median": 3021.0,
-          "mean": 2925.63
+          "median": 3000.0,
+          "mean": 2904.09
+        },
+        "sin_clasificar": {
+          "counts": [
+            1,
+            5,
+            24,
+            47,
+            92,
+            62
+          ],
+          "median": 3360.0,
+          "mean": 3252.38
         }
       },
       "funnel": {
@@ -906,9 +1213,14 @@
           "total": 10396
         },
         "extranjero": {
-          "admitted": 3736,
-          "excluded": 5447,
-          "total": 9183
+          "admitted": 3505,
+          "excluded": 5422,
+          "total": 8927
+        },
+        "sin_clasificar": {
+          "admitted": 231,
+          "excluded": 25,
+          "total": 256
         }
       }
     },
@@ -921,8 +1233,13 @@
         },
         {
           "name": "Extranjero",
-          "count": 2331,
-          "amount": 7427678.88
+          "count": 2100,
+          "amount": 6676378.7
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 231,
+          "amount": 751300.18
         }
       ],
       "stats": {
@@ -941,8 +1258,14 @@
         "extranjero": {
           "min": 82.33,
           "max": 5400.0,
-          "avg": 3186.48,
-          "count": 2331
+          "avg": 3179.23,
+          "count": 2100
+        },
+        "sin_clasificar": {
+          "min": 237.5,
+          "max": 5214.0,
+          "avg": 3252.38,
+          "count": 231
         }
       },
       "distribution": {
@@ -980,15 +1303,27 @@
         },
         "extranjero": {
           "counts": [
-            17,
-            31,
-            182,
-            627,
-            1046,
-            428
+            16,
+            26,
+            158,
+            580,
+            954,
+            366
           ],
-          "median": 3207.48,
-          "mean": 3186.48
+          "median": 3180.0,
+          "mean": 3179.23
+        },
+        "sin_clasificar": {
+          "counts": [
+            1,
+            5,
+            24,
+            47,
+            92,
+            62
+          ],
+          "median": 3360.0,
+          "mean": 3252.38
         }
       },
       "funnel": {
@@ -1003,9 +1338,14 @@
           "total": 2632
         },
         "extranjero": {
-          "admitted": 2331,
-          "excluded": 2475,
-          "total": 4806
+          "admitted": 2100,
+          "excluded": 2450,
+          "total": 4550
+        },
+        "sin_clasificar": {
+          "admitted": 231,
+          "excluded": 25,
+          "total": 256
         }
       }
     },
@@ -1020,6 +1360,11 @@
           "name": "Extranjero",
           "count": 1405,
           "amount": 3502472.28
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 0,
+          "amount": 0.0
         }
       ],
       "stats": {
@@ -1040,6 +1385,12 @@
           "max": 5400.0,
           "avg": 2492.86,
           "count": 1405
+        },
+        "sin_clasificar": {
+          "min": 0,
+          "max": 0,
+          "avg": 0,
+          "count": 0
         }
       },
       "distribution": {
@@ -1086,6 +1437,18 @@
           ],
           "median": 2605.56,
           "mean": 2492.86
+        },
+        "sin_clasificar": {
+          "counts": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "median": 0,
+          "mean": 0
         }
       },
       "funnel": {
@@ -1103,6 +1466,11 @@
           "admitted": 1405,
           "excluded": 2972,
           "total": 4377
+        },
+        "sin_clasificar": {
+          "admitted": 0,
+          "excluded": 0,
+          "total": 0
         }
       }
     }
@@ -1228,32 +1596,32 @@
           "13"
         ],
         "rates": [
-          14.9,
-          13.5,
+          15.0,
+          13.6,
           0.6,
           0.8,
           0.2,
           1.9,
-          22.9,
-          6.9,
+          23.1,
+          7.0,
           2.0,
-          9.1,
+          9.2,
           0.9,
           3.3,
           7.9,
           3.7,
           1.6,
-          33.6,
-          28.6,
-          30.0,
-          48.0,
-          43.0,
-          12.7,
-          8.3,
+          33.9,
+          28.9,
+          30.3,
+          48.5,
+          43.4,
+          12.8,
+          8.4,
           0.7,
           0.6,
-          5.6,
-          1.4
+          5.7,
+          0.5
         ],
         "counts": [
           426,
@@ -1281,9 +1649,97 @@
           21,
           16,
           161,
-          39
+          14
         ],
-        "total": 2864
+        "total": 2839
+      },
+      "sin_clasificar": {
+        "label": "Sin clasificar",
+        "codes": [
+          "1.1",
+          "1.2",
+          "1.2.1",
+          "1.2.2",
+          "1.2.5",
+          "1.2.6",
+          "2.1",
+          "2.2",
+          "2.3",
+          "3",
+          "4.1",
+          "4.2",
+          "4.3",
+          "4.4",
+          "4.5",
+          "4.6",
+          "4.7",
+          "5",
+          "6",
+          "7.1",
+          "7.2",
+          "7.3",
+          "8",
+          "10",
+          "11",
+          "13"
+        ],
+        "rates": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          100.0
+        ],
+        "counts": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          25
+        ],
+        "total": 25
       }
     },
     "excluidos_pie": {
@@ -1294,7 +1750,11 @@
         },
         {
           "name": "Extranjero",
-          "count": 2864
+          "count": 2839
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 25
         }
       ],
       "preferente": [
@@ -1304,7 +1764,11 @@
         },
         {
           "name": "Extranjero",
-          "count": 1321
+          "count": 1296
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 25
         }
       ],
       "general": [
@@ -1315,6 +1779,10 @@
         {
           "name": "Extranjero",
           "count": 1543
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 0
         }
       ]
     },
@@ -1327,8 +1795,13 @@
         },
         {
           "name": "Extranjero",
-          "count": 1861,
-          "amount": 5376622.81
+          "count": 1630,
+          "amount": 4625322.63
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 231,
+          "amount": 751300.18
         }
       ],
       "stats": {
@@ -1347,8 +1820,14 @@
         "extranjero": {
           "min": 59.5,
           "max": 5400.0,
-          "avg": 2889.1,
-          "count": 1861
+          "avg": 2837.62,
+          "count": 1630
+        },
+        "sin_clasificar": {
+          "min": 237.5,
+          "max": 5214.0,
+          "avg": 3252.38,
+          "count": 231
         }
       },
       "distribution": {
@@ -1386,15 +1865,27 @@
         },
         "extranjero": {
           "counts": [
-            83,
-            91,
-            202,
-            487,
-            704,
-            294
+            82,
+            86,
+            178,
+            440,
+            612,
+            232
           ],
           "median": 3000.0,
-          "mean": 2889.1
+          "mean": 2837.62
+        },
+        "sin_clasificar": {
+          "counts": [
+            1,
+            5,
+            24,
+            47,
+            92,
+            62
+          ],
+          "median": 3360.0,
+          "mean": 3252.38
         }
       },
       "funnel": {
@@ -1409,9 +1900,14 @@
           "total": 14854
         },
         "extranjero": {
-          "admitted": 1861,
-          "excluded": 2864,
-          "total": 4725
+          "admitted": 1630,
+          "excluded": 2839,
+          "total": 4469
+        },
+        "sin_clasificar": {
+          "admitted": 231,
+          "excluded": 25,
+          "total": 256
         }
       }
     },
@@ -1424,8 +1920,13 @@
         },
         {
           "name": "Extranjero",
-          "count": 1255,
-          "amount": 3898433.81
+          "count": 1024,
+          "amount": 3147133.63
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 231,
+          "amount": 751300.18
         }
       ],
       "stats": {
@@ -1444,8 +1945,14 @@
         "extranjero": {
           "min": 82.33,
           "max": 5400.0,
-          "avg": 3106.32,
-          "count": 1255
+          "avg": 3073.37,
+          "count": 1024
+        },
+        "sin_clasificar": {
+          "min": 237.5,
+          "max": 5214.0,
+          "avg": 3252.38,
+          "count": 231
         }
       },
       "distribution": {
@@ -1483,15 +1990,27 @@
         },
         "extranjero": {
           "counts": [
+            10,
             11,
-            16,
-            109,
-            362,
-            554,
-            203
+            85,
+            315,
+            462,
+            141
           ],
-          "median": 3090.0,
-          "mean": 3106.32
+          "median": 3000.0,
+          "mean": 3073.37
+        },
+        "sin_clasificar": {
+          "counts": [
+            1,
+            5,
+            24,
+            47,
+            92,
+            62
+          ],
+          "median": 3360.0,
+          "mean": 3252.38
         }
       },
       "funnel": {
@@ -1506,9 +2025,14 @@
           "total": 4862
         },
         "extranjero": {
-          "admitted": 1255,
-          "excluded": 1321,
-          "total": 2576
+          "admitted": 1024,
+          "excluded": 1296,
+          "total": 2320
+        },
+        "sin_clasificar": {
+          "admitted": 231,
+          "excluded": 25,
+          "total": 256
         }
       }
     },
@@ -1523,6 +2047,11 @@
           "name": "Extranjero",
           "count": 606,
           "amount": 1478189.0
+        },
+        {
+          "name": "Sin clasificar",
+          "count": 0,
+          "amount": 0.0
         }
       ],
       "stats": {
@@ -1543,6 +2072,12 @@
           "max": 5400.0,
           "avg": 2439.26,
           "count": 606
+        },
+        "sin_clasificar": {
+          "min": 0,
+          "max": 0,
+          "avg": 0,
+          "count": 0
         }
       },
       "distribution": {
@@ -1589,6 +2124,18 @@
           ],
           "median": 2460.0,
           "mean": 2439.26
+        },
+        "sin_clasificar": {
+          "counts": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "median": 0,
+          "mean": 0
         }
       },
       "funnel": {
@@ -1606,6 +2153,11 @@
           "admitted": 606,
           "excluded": 1543,
           "total": 2149
+        },
+        "sin_clasificar": {
+          "admitted": 0,
+          "excluded": 0,
+          "total": 0
         }
       }
     }
